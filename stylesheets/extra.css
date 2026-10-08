@@ -181,3 +181,50 @@
   text-transform: uppercase;
   font-size: 0.68rem;
 }
+
+/* Cookbook difficulty tags (Beginner / Intermediate / Advanced) */
+.md-nav__link {
+  gap: 0.4rem;
+}
+
+.nav-tag {
+  flex: none;
+  margin-left: auto;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.58rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.nav-tag--beginner {
+  color: #065a91;
+  background: color-mix(in srgb, #9ad1f5 40%, transparent);
+}
+
+.nav-tag--intermediate {
+  color: #a42d71;
+  background: color-mix(in srgb, #ff71df 22%, transparent);
+}
+
+.nav-tag--advanced {
+  color: #245b08;
+  background: color-mix(in srgb, #b6e88e 45%, transparent);
+}
+
+[data-md-color-scheme="slate"] .nav-tag--beginner {
+  color: #9ad1f5;
+  background: color-mix(in srgb, #4b5fd6 28%, transparent);
+}
+
+[data-md-color-scheme="slate"] .nav-tag--intermediate {
+  color: #f386a1;
+  background: color-mix(in srgb, #ff71df 20%, transparent);
+}
+
+[data-md-color-scheme="slate"] .nav-tag--advanced {
+  color: #b6e88e;
+  background: color-mix(in srgb, #245b08 33%, transparent);
+}

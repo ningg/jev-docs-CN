@@ -25,6 +25,28 @@ INDEX_RELOCATIONS = {
     "sdk/javascript.md": "sdk/javascript/index.md",
 }
 
+# Difficulty tags shown in the Cookbooks sidebar (matches docs.typesafe.ai)
+COOKBOOK_LEVELS = {
+    "cookbooks/consistency_noul_cookbook.md": "Beginner",
+    "cookbooks/consistency_choice_cookbook.md": "Beginner",
+    "cookbooks/parallel_questions.md": "Beginner",
+    "cookbooks/rerank_typesafe.md": "Beginner",
+    "cookbooks/semantic_find.md": "Beginner",
+    "cookbooks/autoformat.md": "Beginner",
+    "cookbooks/function_calling.md": "Intermediate",
+    "cookbooks/skill_suggestion.md": "Intermediate",
+    "cookbooks/entity_alignment.md": "Beginner",
+    "cookbooks/classifying_rag_passages.md": "Intermediate",
+    "cookbooks/citation_check.md": "Beginner",
+    "cookbooks/llm_guardrails.md": "Intermediate",
+    "cookbooks/sde_cascade.md": "Intermediate",
+    "cookbooks/date_extraction_cookbook.md": "Beginner",
+    "cookbooks/pre_parsed_value_extraction_cookbook.md": "Beginner",
+    "cookbooks/hierarchical_classification.md": "Intermediate",
+    "cookbooks/autoresearch_feature_discovery.md": "Advanced",
+    "cookbooks/classification_using_confidence.md": "Beginner",
+}
+
 
 def final_rel(rel: Path) -> Path:
     return Path(INDEX_RELOCATIONS.get(rel.as_posix(), rel.as_posix()))
@@ -564,6 +586,23 @@ def strip_residual_jsx(text: str) -> str:
     return text
 
 
+def inject_level_front_matter(text: str, rel_path: Path) -> str:
+    """Add `level:` front matter for cookbook pages (sidebar difficulty tags)."""
+    level = COOKBOOK_LEVELS.get(rel_path.as_posix())
+    if not level:
+        return text
+    if text.startswith("---\n"):
+        end = text.find("\n---\n", 4)
+        if end != -1:
+            fm = text[4:end]
+            if re.search(r"(?m)^level:\s*", fm):
+                fm = re.sub(r"(?m)^level:\s*.*$", f"level: {level}", fm)
+            else:
+                fm = fm.rstrip() + f"\nlevel: {level}\n"
+            return f"---\n{fm}\n---\n" + text[end + 5 :]
+    return f"---\nlevel: {level}\n---\n\n{text}"
+
+
 def transform(text: str, rel_path: Path) -> str:
     text = INDEX_BLOCK_RE.sub("", text)
     text = strip_typesafe_example_helper(text)
@@ -585,7 +624,8 @@ def transform(text: str, rel_path: Path) -> str:
     text = fix_links(text, rel_path)
     text = strip_residual_jsx(text)
     text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.strip() + "\n"
+    text = text.strip() + "\n"
+    return inject_level_front_matter(text, rel_path)
 
 
 def write_index() -> None:
