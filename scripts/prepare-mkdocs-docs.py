@@ -1,0 +1,603 @@
+#!/usr/bin/env python3
+"""Convert documentation/en (Mintlify Markdown) into docs/ for MkDocs Material."""
+
+from __future__ import annotations
+
+import html
+import os
+import re
+import shutil
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "documentation" / "en"
+OUT = ROOT / "docs"
+
+INDEX_BLOCK_RE = re.compile(
+    r"^>\s*##\s*Documentation Index\n(?:>.*\n)*\n?",
+    re.MULTILINE,
+)
+
+FENCE_META_RE = re.compile(
+    r"^```([a-zA-Z0-9_+-]*)[^\n]*$",
+    re.MULTILINE,
+)
+
+ADMONITION_TAGS = {
+    "Tip": "tip",
+    "Note": "note",
+    "Warning": "warning",
+    "Info": "info",
+    "Check": "success",
+}
+
+
+def find_tag_close(text: str, start: int) -> int:
+    """Return index of '>' that closes the opening tag starting at start ('<')."""
+    i = start + 1
+    in_quote: str | None = None
+    while i < len(text):
+        ch = text[i]
+        if in_quote:
+            if ch == in_quote and text[i - 1] != "\\":
+                in_quote = None
+        elif ch in "\"'":
+            in_quote = ch
+        elif ch == ">":
+            return i
+        i += 1
+    return -1
+
+
+def find_matching_close(text: str, open_tag_name: str, open_start: int) -> tuple[int, int] | None:
+    """
+    Given start of '<Tag...', return (content_start, close_end) where close_end is
+    past '</Tag>'. Handles nested same-named tags. Quote-aware for attributes.
+    """
+    close_gt = find_tag_close(text, open_start)
+    if close_gt < 0:
+        return None
+    open_tag = text[open_start : close_gt + 1]
+    if open_tag.endswith("/>"):
+        return close_gt + 1, close_gt + 1  # self-closing: no content
+    content_start = close_gt + 1
+    pattern_open = re.compile(rf"<{open_tag_name}\b")
+    pattern_close = re.compile(rf"</{open_tag_name}\s*>")
+    pos = content_start
+    depth = 1
+    while depth > 0 and pos < len(text):
+        mo = pattern_open.search(text, pos)
+        mc = pattern_close.search(text, pos)
+        if mc is None:
+            return None
+        if mo and mo.start() < mc.start():
+            gt = find_tag_close(text, mo.start())
+            if gt < 0:
+                return None
+            nested_open = text[mo.start() : gt + 1]
+            # Self-closing nested tags do not increase depth
+            if not nested_open.rstrip().endswith("/>"):
+                depth += 1
+            pos = gt + 1
+        else:
+            depth -= 1
+            if depth == 0:
+                return content_start, mc.end()
+            pos = mc.end()
+    return None
+
+
+def iter_tags(text: str, tag_name: str):
+    """Yield (start, attrs, content_or_none, end) for each top-level tag occurrence."""
+    pattern = re.compile(rf"<{tag_name}\b")
+    pos = 0
+    while True:
+        m = pattern.search(text, pos)
+        if not m:
+            break
+        gt = find_tag_close(text, m.start())
+        if gt < 0:
+            break
+        open_tag = text[m.start() : gt + 1]
+        attrs = open_tag[len(tag_name) + 1 : -1].strip()
+        if attrs.endswith("/"):
+            attrs = attrs[:-1].rstrip()
+        if open_tag.rstrip().endswith("/>") or open_tag.endswith("/>"):
+            yield m.start(), attrs, None, gt + 1
+            pos = gt + 1
+            continue
+        matched = find_matching_close(text, tag_name, m.start())
+        if not matched:
+            pos = gt + 1
+            continue
+        content_start, close_end = matched
+        if content_start == close_end:
+            # self-closing via find_matching_close
+            yield m.start(), attrs, None, close_end
+            pos = close_end
+            continue
+        yield m.start(), attrs, text[content_start:close_end - len(f"</{tag_name}>")].rstrip(), close_end
+        # Actually content should exclude closing tag - fix:
+        # close_end is past </Tag>, content is content_start until start of </Tag>
+        pos = close_end
+
+
+def replace_tags(text: str, tag_name: str, replacer) -> str:
+    """Replace all occurrences of tag_name using replacer(attrs, content|None) -> str.
+    Processes from the end / repeatedly innermost-first by scanning left-to-right
+    but using matching that handles nesting; for nested same tags, process
+    innermost by looping until stable.
+    """
+    for _ in range(50):
+        pattern = re.compile(rf"<{tag_name}\b")
+        # Find innermost: a tag whose content does not contain another same tag
+        candidates = []
+        pos = 0
+        while True:
+            m = pattern.search(text, pos)
+            if not m:
+                break
+            gt = find_tag_close(text, m.start())
+            if gt < 0:
+                break
+            open_tag = text[m.start() : gt + 1]
+            attrs_raw = open_tag[len(tag_name) + 1 :]
+            self_closing = open_tag.rstrip().endswith("/>")
+            if self_closing:
+                attrs = attrs_raw[:-2].strip() if attrs_raw.rstrip().endswith("/") else attrs_raw[:-1].strip()
+                # normalize
+                if attrs.endswith("/"):
+                    attrs = attrs[:-1].rstrip()
+                attrs = open_tag[len(f"<{tag_name}") : gt].strip()
+                if attrs.endswith("/"):
+                    attrs = attrs[:-1].rstrip()
+                candidates.append((m.start(), gt + 1, attrs, None))
+                pos = gt + 1
+                continue
+            matched = find_matching_close(text, tag_name, m.start())
+            if not matched:
+                pos = gt + 1
+                continue
+            content_start, close_end = matched
+            # content excludes closing tag
+            close_tag = f"</{tag_name}>"
+            # find actual close start
+            close_start = text.rfind(close_tag, content_start, close_end)
+            content = text[content_start:close_start] if close_start >= 0 else text[content_start:close_end]
+            attrs = open_tag[len(f"<{tag_name}") : gt].strip()
+            candidates.append((m.start(), close_end, attrs, content))
+            pos = close_end
+
+        if not candidates:
+            break
+
+        # Prefer innermost: content has no nested same tag, or self-closing
+        innermost = None
+        for start, end, attrs, content in candidates:
+            if content is None or not re.search(rf"<{tag_name}\b", content):
+                innermost = (start, end, attrs, content)
+                break
+        if innermost is None:
+            # fallback: last candidate (deepest by scan order of nested)
+            innermost = candidates[-1]
+
+        start, end, attrs, content = innermost
+        replacement = replacer(attrs, content)
+        text = text[:start] + replacement + text[end:]
+    return text
+
+
+def attr(attrs: str, name: str) -> str | None:
+    m = re.search(rf'{name}="([^"]*)"', attrs)
+    if m:
+        return html.unescape(m.group(1))
+    m = re.search(rf"{name}={{([^}}]+)}}", attrs)
+    if m:
+        return m.group(1).strip().strip("'\"")
+    return None
+
+
+def indent_block(text: str, prefix: str = "    ") -> str:
+    lines = text.strip("\n").split("\n")
+    if not lines:
+        return prefix
+    return "\n".join(prefix + line if line.strip() else prefix.rstrip() for line in lines)
+
+
+def strip_typesafe_example_helper(text: str) -> str:
+    marker = "export function TypesafeExample"
+    while True:
+        start = text.find(marker)
+        if start == -1:
+            break
+        brace = text.find("{", start)
+        if brace == -1:
+            break
+        depth = 0
+        i = brace
+        while i < len(text):
+            ch = text[i]
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    i += 1
+                    break
+            i += 1
+        end = i
+        while end < len(text) and text[end] in "\n\r":
+            end += 1
+        text = text[:start] + text[end:]
+    return text
+
+
+def jsx_style_to_html(style_js: str) -> str:
+    parts = []
+    for m in re.finditer(r"([A-Za-z0-9]+)\s*:\s*['\"]([^'\"]*)['\"]", style_js):
+        key = re.sub(r"([a-z])([A-Z])", r"\1-\2", m.group(1)).lower()
+        parts.append(f"{key}:{m.group(2)}")
+    return ";".join(parts)
+
+
+def convert_typesafe_examples(text: str) -> str:
+    def replacer(attrs: str, content: str | None) -> str:
+        # Self-closing with example={{...}} in attrs
+        m = re.search(r"example=\{\{([\s\S]*)\}\}\s*$", attrs)
+        if m:
+            body = m.group(1).strip()
+            return f'\n```javascript title="Example request"\n{{\n{body}\n}}\n```\n'
+        return (
+            '\n!!! note "Example"\n\n'
+            "    Interactive example available on the official TypeSafe docs.\n"
+        )
+
+    return replace_tags(text, "TypesafeExample", replacer)
+
+
+def convert_admonitions(text: str) -> str:
+    for tag, kind in ADMONITION_TAGS.items():
+
+        def replacer(attrs: str, content: str | None, kind: str = kind) -> str:
+            body = (content or "").strip()
+            return f"\n!!! {kind}\n\n{indent_block(body)}\n"
+
+        text = replace_tags(text, tag, replacer)
+    return text
+
+
+def field_heading(attrs: str) -> str:
+    name = (
+        attr(attrs, "body")
+        or attr(attrs, "query")
+        or attr(attrs, "path")
+        or attr(attrs, "header")
+        or attr(attrs, "name")
+        or "field"
+    )
+    typ = attr(attrs, "type") or ""
+    required = bool(re.search(r"\brequired\b", attrs))
+    bits = []
+    if typ:
+        bits.append(f"`{html.unescape(typ)}`")
+    if required:
+        bits.append("required")
+    suffix = f" ({', '.join(bits)})" if bits else ""
+    return f"**`{name}`**{suffix}"
+
+
+def convert_param_fields(text: str) -> str:
+    def replacer(attrs: str, content: str | None) -> str:
+        head = field_heading(attrs)
+        if content is None or not content.strip():
+            return f"\n{head}\n"
+        return f"\n{head}\n\n{content.strip()}\n"
+
+    text = replace_tags(text, "ParamField", replacer)
+    text = replace_tags(text, "ResponseField", replacer)
+    return text
+
+
+def convert_expandable(text: str) -> str:
+    def replacer(attrs: str, content: str | None) -> str:
+        title = attr(attrs, "title") or "Details"
+        body = (content or "").strip()
+        return f'\n??? note "{title}"\n\n{indent_block(body)}\n'
+
+    return replace_tags(text, "Expandable", replacer)
+
+
+def convert_accordion(text: str) -> str:
+    text = re.sub(r"</?AccordionGroup\b[^>]*>", "", text)
+
+    def replacer(attrs: str, content: str | None) -> str:
+        title = attr(attrs, "title") or "Details"
+        body = (content or "").strip()
+        return f'\n??? note "{title}"\n\n{indent_block(body)}\n'
+
+    return replace_tags(text, "Accordion", replacer)
+
+
+def convert_tabs(text: str) -> str:
+    def tabs_replacer(attrs: str, content: str | None) -> str:
+        inner = content or ""
+        parts = []
+        # Extract Tab children via replace_tags scan
+        # Manually find Tab tags in inner
+        def collect_tabs(src: str) -> list[tuple[str, str]]:
+            result = []
+            pattern = re.compile(r"<Tab\b")
+            pos = 0
+            while True:
+                m = pattern.search(src, pos)
+                if not m:
+                    break
+                gt = find_tag_close(src, m.start())
+                if gt < 0:
+                    break
+                open_tag = src[m.start() : gt + 1]
+                tattrs = open_tag[len("<Tab") : gt].strip()
+                matched = find_matching_close(src, "Tab", m.start())
+                if not matched:
+                    pos = gt + 1
+                    continue
+                cstart, cend = matched
+                close_start = src.rfind("</Tab>", cstart, cend)
+                body = src[cstart:close_start].strip() if close_start >= 0 else ""
+                title = attr(tattrs, "title") or "Tab"
+                result.append((title, body))
+                pos = cend
+            return result
+
+        for title, body in collect_tabs(inner):
+            parts.append(f"#### {title}\n\n{body}")
+        return "\n\n".join(parts) + "\n" if parts else inner
+
+    # Innermost Tabs first via replace_tags loop
+    return replace_tags(text, "Tabs", tabs_replacer)
+
+
+def convert_steps(text: str) -> str:
+    def steps_replacer(attrs: str, content: str | None) -> str:
+        inner = content or ""
+        parts = []
+        n = 1
+        pattern = re.compile(r"<Step\b")
+        pos = 0
+        while True:
+            m = pattern.search(inner, pos)
+            if not m:
+                break
+            gt = find_tag_close(inner, m.start())
+            if gt < 0:
+                break
+            open_tag = inner[m.start() : gt + 1]
+            sattrs = open_tag[len("<Step") : gt].strip()
+            matched = find_matching_close(inner, "Step", m.start())
+            if not matched:
+                pos = gt + 1
+                continue
+            cstart, cend = matched
+            close_start = inner.rfind("</Step>", cstart, cend)
+            body = inner[cstart:close_start].strip() if close_start >= 0 else ""
+            title = attr(sattrs, "title") or f"Step {n}"
+            parts.append(f"### {n}. {title}\n\n{body}")
+            n += 1
+            pos = cend
+        return "\n\n".join(parts) + "\n" if parts else inner
+
+    return replace_tags(text, "Steps", steps_replacer)
+
+
+def convert_cards_columns(text: str) -> str:
+    text = replace_tags(text, "Columns", lambda attrs, content: "\n" + (content or "") + "\n")
+
+    def card_replacer(attrs: str, content: str | None) -> str:
+        title = attr(attrs, "title") or "Card"
+        href = attr(attrs, "href")
+        body = (content or "").strip()
+        if href:
+            return f"\n- **[{title}]({href})** — {body}\n"
+        return f"\n#### {title}\n\n{body}\n"
+
+    return replace_tags(text, "Card", card_replacer)
+
+
+def convert_frame(text: str) -> str:
+    def replacer(attrs: str, content: str | None) -> str:
+        inner = content or ""
+        imgs = re.findall(r"<img\b[^>]*>", inner)
+        iframes = re.findall(
+            r"<iframe\b[^>]*>.*?</iframe>|<iframe\b[^>]*/>",
+            inner,
+            re.DOTALL,
+        )
+        chosen: list[str] = []
+        if iframes:
+            chosen = iframes
+        elif imgs:
+            light = [i for i in imgs if "dark:hidden" in i or "block dark:hidden" in i]
+            chosen = light[:1] if light else imgs[:1]
+        out = []
+        for tag in chosen:
+            tag = re.sub(
+                r"style=\{\{([\s\S]*?)\}\}",
+                lambda mm: f'style="{jsx_style_to_html(mm.group(1))}"',
+                tag,
+            )
+            tag = re.sub(r'\sclassName="[^"]*"', "", tag)
+            tag = re.sub(r'\sdata-path="[^"]*"', "", tag)
+            tag = re.sub(r'\swidth="[^"]*"', "", tag)
+            tag = re.sub(r'\sheight="[^"]*"', "", tag)
+            out.append(tag)
+        return "\n" + "\n".join(out) + "\n"
+
+    return replace_tags(text, "Frame", replacer)
+
+
+def convert_sdk_signature(text: str) -> str:
+    def replacer(attrs: str, content: str | None) -> str:
+        inner = content or ""
+
+        def link_repl(lm: re.Match[str]) -> str:
+            href = lm.group(1)
+            label_bits = re.findall(r'\{"([^"]*)"\}', lm.group(2))
+            label = "".join(label_bits) if label_bits else href.rsplit("/", 1)[-1]
+            return f"[{label}]({href})"
+
+        inner = re.sub(
+            r'<a\s+href="([^"]*)"[^>]*>([\s\S]*?)</a>',
+            link_repl,
+            inner,
+        )
+        pieces: list[str] = []
+        pos = 0
+        for sm in re.finditer(r'\{"((?:\\.|[^"\\])*)"\}', inner):
+            pieces.append(inner[pos : sm.start()])
+            raw = sm.group(1)
+            pieces.append(html.unescape(raw))
+            pos = sm.end()
+        pieces.append(inner[pos:])
+        merged = "".join(pieces)
+        merged = re.sub(r"<[^>]+>", "", merged)
+        merged = merged.replace("\n", "").strip()
+        merged = re.sub(r"\s+", " ", merged)
+        if not merged:
+            return ""
+        return f"\n```text\n{merged}\n```\n"
+
+    return replace_tags(text, "SdkSignature", replacer)
+
+
+def convert_code_group(text: str) -> str:
+    return replace_tags(text, "CodeGroup", lambda attrs, content: "\n" + (content or "") + "\n")
+
+
+def strip_explorers(text: str) -> str:
+    for name in (
+        "ScoreExplorer",
+        "ConfidenceExplorer",
+        "ScoreConfidenceExplorer",
+    ):
+        text = re.sub(
+            rf"<{name}\s*/>",
+            f'\n!!! note "Interactive widget"\n\n'
+            f"    The interactive {name} is available on the "
+            f"[official TypeSafe docs](https://docs.typesafe.ai/).\n",
+            text,
+        )
+    return text
+
+
+def clean_fences(text: str) -> str:
+    def repl(m: re.Match[str]) -> str:
+        lang = m.group(1) or ""
+        return f"```{lang}"
+
+    return FENCE_META_RE.sub(repl, text)
+
+
+def fix_links(text: str, rel_path: Path) -> str:
+    def rel_target(target: str) -> str:
+        if target.startswith(("http://", "https://", "mailto:", "#")):
+            return target
+        path_part, frag = (target.split("#", 1) + [""])[:2]
+        path_part = path_part.lstrip("/")
+        if not path_part:
+            return "#" + frag if frag else target
+        if not path_part.endswith(".md"):
+            path_part = path_part + ".md"
+        dest = Path(path_part)
+        start_dir = rel_path.parent
+        rel = Path(os.path.relpath(dest.as_posix(), start=start_dir.as_posix() or "."))
+        out = rel.as_posix()
+        if frag:
+            out += "#" + frag
+        return out
+
+    def md_link(m: re.Match[str]) -> str:
+        label, href = m.group(1), m.group(2)
+        if href.startswith("/") and not href.startswith("//"):
+            return f"[{label}]({rel_target(href)})"
+        return m.group(0)
+
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", md_link, text)
+
+    def href_attr(m: re.Match[str]) -> str:
+        href = m.group(1)
+        if href.startswith("/") and not href.startswith("//"):
+            return f'href="{rel_target(href)}"'
+        return m.group(0)
+
+    text = re.sub(r'href="([^"]+)"', href_attr, text)
+    return text
+
+
+def strip_residual_jsx(text: str) -> str:
+    text = re.sub(r"</?(?:CodeBlock)[^>]*>", "", text)
+    text = re.sub(r"\{/\*[\s\S]*?\*/\}", "", text)
+    # Leftover Tab wrappers if any
+    text = re.sub(r"</?Tab\b[^>]*>", "", text)
+    text = re.sub(r"</?Tabs\b[^>]*>", "", text)
+    return text
+
+
+def transform(text: str, rel_path: Path) -> str:
+    text = INDEX_BLOCK_RE.sub("", text)
+    text = strip_typesafe_example_helper(text)
+    # Nested structures: convert children before parents where needed
+    text = convert_typesafe_examples(text)
+    text = convert_param_fields(text)
+    text = convert_expandable(text)
+    text = convert_param_fields(text)  # nested fields inside expandables
+    text = convert_accordion(text)
+    text = convert_tabs(text)
+    text = convert_steps(text)
+    text = convert_admonitions(text)
+    text = convert_cards_columns(text)
+    text = convert_frame(text)
+    text = convert_sdk_signature(text)
+    text = convert_code_group(text)
+    text = strip_explorers(text)
+    text = clean_fences(text)
+    text = fix_links(text, rel_path)
+    text = strip_residual_jsx(text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip() + "\n"
+
+
+def write_index() -> None:
+    (OUT / "index.md").write_text(
+        """# Jev Docs (CN)
+
+中文文档站（英文源镜像）。内容同步自 [TypeSafe AI documentation](https://docs.typesafe.ai/introduction)。
+
+**[开始阅读：Introduction →](introduction.md)**
+""",
+        encoding="utf-8",
+    )
+
+
+def main() -> None:
+    if not SRC.is_dir():
+        raise SystemExit(f"Missing source directory: {SRC}")
+
+    if OUT.exists():
+        shutil.rmtree(OUT)
+    OUT.mkdir(parents=True)
+
+    count = 0
+    for src_file in sorted(SRC.rglob("*.md")):
+        rel = src_file.relative_to(SRC)
+        dest = OUT / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        raw = src_file.read_text(encoding="utf-8")
+        dest.write_text(transform(raw, rel), encoding="utf-8")
+        count += 1
+
+    write_index()
+    print(f"Prepared {count} pages + index.md → {OUT}")
+
+
+if __name__ == "__main__":
+    main()

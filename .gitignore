@@ -1,0 +1,15 @@
+# Generated MkDocs input/output
+docs/
+site/
+
+# Python
+.venv/
+.venv-docs/
+__pycache__/
+*.pyc
+.Python
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
