@@ -228,3 +228,203 @@
   color: #b6e88e;
   background: color-mix(in srgb, #245b08 33%, transparent);
 }
+
+/* Content tabs — TypeSafe / Mintlify style (underline labels, primary active) */
+.md-typeset .tabbed-set {
+  margin: 0.65em 0 1.35em;
+}
+
+.md-typeset .tabbed-labels {
+  box-shadow: none;
+  border-bottom: 1px solid rgba(44, 39, 43, 0.12);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+/* Prefer per-label underline over Material's sliding indicator */
+.js .md-typeset .tabbed-labels::before,
+.md-typeset .tabbed-labels::before {
+  display: none;
+}
+
+.md-typeset .tabbed-labels > label {
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.5;
+  padding: 0.75rem 0 0.625rem;
+  margin-bottom: -1px;
+  background: transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.md-typeset .tabbed-labels > label:hover {
+  color: var(--md-default-fg-color);
+  border-bottom-color: rgba(44, 39, 43, 0.28);
+  background: transparent;
+}
+
+.md-typeset .tabbed-labels--linked > label > a {
+  padding: 0.75rem 0 0.625rem;
+}
+
+.md-typeset .tabbed-content {
+  padding-top: 0.15rem;
+}
+
+/* Active tab: pink label + matching underline (same selectors Material uses) */
+.md-typeset .tabbed-set > input:nth-child(1):checked ~ .tabbed-labels > :nth-child(1),
+.md-typeset .tabbed-set > input:nth-child(2):checked ~ .tabbed-labels > :nth-child(2),
+.md-typeset .tabbed-set > input:nth-child(3):checked ~ .tabbed-labels > :nth-child(3),
+.md-typeset .tabbed-set > input:nth-child(4):checked ~ .tabbed-labels > :nth-child(4),
+.md-typeset .tabbed-set > input:nth-child(5):checked ~ .tabbed-labels > :nth-child(5),
+.md-typeset .tabbed-set > input:nth-child(6):checked ~ .tabbed-labels > :nth-child(6),
+.md-typeset .tabbed-set > input:nth-child(7):checked ~ .tabbed-labels > :nth-child(7),
+.md-typeset .tabbed-set > input:nth-child(8):checked ~ .tabbed-labels > :nth-child(8),
+.md-typeset .tabbed-set > input:nth-child(9):checked ~ .tabbed-labels > :nth-child(9),
+.md-typeset .tabbed-set > input:nth-child(10):checked ~ .tabbed-labels > :nth-child(10),
+.md-typeset .tabbed-set > input:nth-child(11):checked ~ .tabbed-labels > :nth-child(11),
+.md-typeset .tabbed-set > input:nth-child(12):checked ~ .tabbed-labels > :nth-child(12),
+.md-typeset .tabbed-set > input:nth-child(13):checked ~ .tabbed-labels > :nth-child(13),
+.md-typeset .tabbed-set > input:nth-child(14):checked ~ .tabbed-labels > :nth-child(14),
+.md-typeset .tabbed-set > input:nth-child(15):checked ~ .tabbed-labels > :nth-child(15),
+.md-typeset .tabbed-set > input:nth-child(16):checked ~ .tabbed-labels > :nth-child(16),
+.md-typeset .tabbed-set > input:nth-child(17):checked ~ .tabbed-labels > :nth-child(17),
+.md-typeset .tabbed-set > input:nth-child(18):checked ~ .tabbed-labels > :nth-child(18),
+.md-typeset .tabbed-set > input:nth-child(19):checked ~ .tabbed-labels > :nth-child(19),
+.md-typeset .tabbed-set > input:nth-child(20):checked ~ .tabbed-labels > :nth-child(20) {
+  color: var(--md-primary-fg-color);
+  border-bottom-color: var(--md-primary-fg-color);
+  font-weight: 600;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .tabbed-labels {
+  border-bottom-color: rgba(212, 207, 210, 0.14);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .tabbed-labels > label {
+  color: var(--ts-header-fg-muted);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .tabbed-labels > label:hover {
+  color: var(--ts-header-fg);
+  border-bottom-color: rgba(212, 207, 210, 0.4);
+}
+
+/* AccordionGroup — TypeSafe / Mintlify style */
+.md-typeset .ts-accordion-group {
+  margin: 0.85em 0 1.4em;
+  border: 1px solid rgba(44, 39, 43, 0.12);
+  border-radius: 1rem;
+  overflow: hidden;
+  background: var(--md-default-bg-color--lightest);
+}
+
+.md-typeset .ts-accordion-group > .ts-accordion {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(44, 39, 43, 0.12);
+  background: transparent;
+  box-shadow: none;
+  font-size: inherit;
+}
+
+.md-typeset .ts-accordion-group > .ts-accordion:last-child {
+  border-bottom: 0;
+}
+
+.md-typeset .ts-accordion > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  list-style: none;
+  padding: 0.85rem 1.15rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--md-default-fg-color);
+  transition: background-color 0.15s ease;
+}
+
+.md-typeset .ts-accordion > summary::-webkit-details-marker {
+  display: none;
+}
+
+.md-typeset .ts-accordion > summary::before {
+  content: "";
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0;
+  background-color: var(--md-default-fg-color--light);
+  -webkit-mask-image: var(--md-details-icon);
+  mask-image: var(--md-details-icon);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  transform: rotate(-90deg);
+  transition: transform 0.2s ease;
+}
+
+.md-typeset .ts-accordion[open] > summary::before {
+  transform: rotate(0deg);
+}
+
+.md-typeset .ts-accordion > summary:hover {
+  background: rgba(44, 39, 43, 0.04);
+}
+
+.md-typeset .ts-acc-icon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.88;
+  /* Hide Material's default details icon slot if present */
+  vertical-align: middle;
+}
+
+/* Lucide SVGs are dark strokes; invert in slate scheme */
+[data-md-color-scheme="slate"] .md-typeset .ts-acc-icon {
+  filter: invert(1);
+  opacity: 0.92;
+}
+
+/* Neutralize Material admonition/details chrome on these blocks */
+.md-typeset details.ts-accordion > summary::after {
+  display: none;
+}
+
+.md-typeset .ts-acc-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.md-typeset .ts-accordion > :not(summary) {
+  margin-left: 1.15rem;
+  margin-right: 1.15rem;
+}
+
+.md-typeset .ts-accordion > ul {
+  margin-top: 0.15rem;
+  margin-bottom: 0.95rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .ts-accordion-group {
+  border-color: rgba(212, 207, 210, 0.14);
+  background: color-mix(in srgb, var(--md-default-bg-color) 88%, #fff 12%);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .ts-accordion-group > .ts-accordion {
+  border-bottom-color: rgba(212, 207, 210, 0.14);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .ts-accordion > summary:hover {
+  background: rgba(255, 255, 255, 0.04);
+}

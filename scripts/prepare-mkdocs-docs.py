@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "documentation" / "en"
 OUT = ROOT / "docs"
 STYLES_SRC = ROOT / "stylesheets"
+JS_SRC = ROOT / "javascripts"
 
 # Overview pages that become section indexes for navigation.indexes
 INDEX_RELOCATIONS = {
@@ -62,8 +63,15 @@ INDEX_BLOCK_RE = re.compile(
     re.MULTILINE,
 )
 
-FENCE_META_RE = re.compile(
-    r"^```([a-zA-Z0-9_+-]*)[^\n]*$",
+MINTLIFY_FOOTER_RE = re.compile(
+    r"\n*This documentation is built and hosted on "
+    r"(?:\[Mintlify\]\(https://mintlify\.com\)|Mintlify)"
+    r", a developer documentation platform\.\s*$",
+)
+
+# Opening fences, optionally indented (list nesting / converted Tabs).
+FENCE_OPEN_RE = re.compile(
+    r"^([ \t]*)```([^\n]*)$",
     re.MULTILINE,
 )
 
@@ -248,17 +256,61 @@ def indent_block(text: str, prefix: str = "    ") -> str:
     return "\n".join(prefix + line if line.strip() else prefix.rstrip() for line in lines)
 
 
-def strip_typesafe_example_helper(text: str) -> str:
-    marker = "export function TypesafeExample"
+def dedent_block(text: str) -> str:
+    """Remove the common leading indent from every non-empty line."""
+    lines = text.strip("\n").split("\n")
+    nonempty = [ln for ln in lines if ln.strip()]
+    if not nonempty:
+        return ""
+    cut = min(len(ln) - len(ln.lstrip(" \t")) for ln in nonempty)
+    out: list[str] = []
+    for ln in lines:
+        if not ln.strip():
+            out.append("")
+            continue
+        i = 0
+        removed = 0
+        while i < len(ln) and removed < cut and ln[i] in " \t":
+            i += 1
+            removed += 1
+        out.append(ln[i:])
+    return "\n".join(out).strip("\n")
+
+
+def strip_export_function(text: str, name: str) -> str:
+    """Remove ``export function Name(...) { ... }`` blocks from Mintlify MDX.
+
+    The parameter list may contain destructuring ``{...}``, so the first ``{``
+    after the name is not always the function body. Match the body brace after
+    the closing ``)`` of the parameter list.
+    """
+    marker = f"export function {name}"
     while True:
         start = text.find(marker)
         if start == -1:
             break
-        brace = text.find("{", start)
-        if brace == -1:
+        paren = text.find("(", start + len(marker))
+        if paren == -1:
             break
         depth = 0
-        i = brace
+        i = paren
+        while i < len(text):
+            ch = text[i]
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth == 0:
+                    i += 1
+                    break
+            i += 1
+        else:
+            break
+        while i < len(text) and text[i].isspace():
+            i += 1
+        if i >= len(text) or text[i] != "{":
+            break
+        depth = 0
         while i < len(text):
             ch = text[i]
             if ch == "{":
@@ -274,6 +326,11 @@ def strip_typesafe_example_helper(text: str) -> str:
             end += 1
         text = text[:start] + text[end:]
     return text
+
+
+def strip_typesafe_example_helper(text: str) -> str:
+    """Remove Mintlify ``export function TypesafeExample(...) { ... }`` helpers."""
+    return strip_export_function(text, "TypesafeExample")
 
 
 def jsx_style_to_html(style_js: str) -> str:
@@ -293,7 +350,8 @@ def convert_typesafe_examples(text: str) -> str:
             return f'\n```javascript title="Example request"\n{{\n{body}\n}}\n```\n'
         return (
             '\n!!! note "Example"\n\n'
-            "    Interactive example available on the official TypeSafe docs.\n"
+            "    Interactive example available on the "
+            "[official TypeSafe docs](https://docs.typesafe.ai/).\n"
         )
 
     return replace_tags(text, "TypesafeExample", replacer)
@@ -351,23 +409,46 @@ def convert_expandable(text: str) -> str:
     return replace_tags(text, "Expandable", replacer)
 
 
+LUCIDE_ICON_CDN = "https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons"
+
+
 def convert_accordion(text: str) -> str:
-    text = re.sub(r"</?AccordionGroup\b[^>]*>", "", text)
+    """Convert Mintlify Accordion/AccordionGroup into TypeSafe-like details blocks."""
 
-    def replacer(attrs: str, content: str | None) -> str:
+    def accordion_replacer(attrs: str, content: str | None) -> str:
         title = attr(attrs, "title") or "Details"
-        body = (content or "").strip()
-        return f'\n??? note "{title}"\n\n{indent_block(body)}\n'
+        icon = attr(attrs, "icon") or ""
+        body = dedent_block(content or "")
+        icon_html = ""
+        if icon and re.fullmatch(r"[a-z0-9-]+", icon):
+            icon_html = (
+                f'<img class="ts-acc-icon" '
+                f'src="{LUCIDE_ICON_CDN}/{icon}.svg" alt="" aria-hidden="true" />'
+            )
+        return (
+            f'\n<details class="ts-accordion" markdown="1">\n'
+            f"<summary>{icon_html}"
+            f'<span class="ts-acc-title">{html.escape(title)}</span></summary>\n\n'
+            f"{body}\n\n"
+            f"</details>\n"
+        )
 
-    return replace_tags(text, "Accordion", replacer)
+    text = replace_tags(text, "Accordion", accordion_replacer)
+
+    def group_replacer(attrs: str, content: str | None) -> str:
+        inner = (content or "").strip()
+        return f'\n<div class="ts-accordion-group" markdown="1">\n\n{inner}\n\n</div>\n'
+
+    text = replace_tags(text, "AccordionGroup", group_replacer)
+    return text
 
 
 def convert_tabs(text: str) -> str:
+    """Convert Mintlify <Tabs>/<Tab> into pymdownx.tabbed content tabs."""
+
     def tabs_replacer(attrs: str, content: str | None) -> str:
         inner = content or ""
-        parts = []
-        # Extract Tab children via replace_tags scan
-        # Manually find Tab tags in inner
+
         def collect_tabs(src: str) -> list[tuple[str, str]]:
             result = []
             pattern = re.compile(r"<Tab\b")
@@ -387,15 +468,18 @@ def convert_tabs(text: str) -> str:
                     continue
                 cstart, cend = matched
                 close_start = src.rfind("</Tab>", cstart, cend)
-                body = src[cstart:close_start].strip() if close_start >= 0 else ""
+                body = src[cstart:close_start] if close_start >= 0 else ""
                 title = attr(tattrs, "title") or "Tab"
                 result.append((title, body))
                 pos = cend
             return result
 
+        parts: list[str] = []
         for title, body in collect_tabs(inner):
-            parts.append(f"#### {title}\n\n{body}")
-        return "\n\n".join(parts) + "\n" if parts else inner
+            body = dedent_block(body)
+            safe_title = title.replace('"', '\\"')
+            parts.append(f'=== "{safe_title}"\n\n{indent_block(body)}\n')
+        return "\n".join(parts) + "\n" if parts else inner
 
     # Innermost Tabs first via replace_tags loop
     return replace_tags(text, "Tabs", tabs_replacer)
@@ -523,6 +607,7 @@ def strip_explorers(text: str) -> str:
         "ConfidenceExplorer",
         "ScoreConfidenceExplorer",
     ):
+        text = strip_export_function(text, name)
         text = re.sub(
             rf"<{name}\s*/>",
             f'\n!!! note "Interactive widget"\n\n'
@@ -534,11 +619,44 @@ def strip_explorers(text: str) -> str:
 
 
 def clean_fences(text: str) -> str:
-    def repl(m: re.Match[str]) -> str:
-        lang = m.group(1) or ""
-        return f"```{lang}"
+    """Normalize Mintlify fence meta for MkDocs Material.
 
-    return FENCE_META_RE.sub(repl, text)
+    Keeps ``title="..."`` (and bare titles like ``json Example request``) so
+    Material can render the code-block header; strips theme/focus/etc.
+    """
+
+    def repl(m: re.Match[str]) -> str:
+        indent, meta = m.group(1), (m.group(2) or "").strip()
+        if not meta:
+            return f"{indent}```"
+
+        title: str | None = None
+        title_m = re.search(r"""\btitle=(["'])(.*?)\1""", meta)
+        if title_m:
+            title = title_m.group(2)
+
+        rest = meta
+        rest = re.sub(r"""\btitle=(["'])(.*?)\1""", "", rest)
+        rest = re.sub(r"\btheme=\{[^}]*\}", "", rest)
+        rest = re.sub(r"\bfocus=\{[^}]*\}", "", rest)
+        rest = re.sub(r"\bactions=\{[^}]*\}", "", rest)
+        rest = re.sub(r"\bexpandable\b", "", rest)
+        rest = re.sub(r"\bwrap\b", "", rest)
+        rest = rest.strip().lstrip("`").strip()
+
+        parts = rest.split()
+        lang = parts[0] if parts else ""
+        if title is None and len(parts) > 1:
+            title = " ".join(parts[1:])
+
+        out = f"{indent}```{lang}"
+        if title:
+            # Escape quotes in title for the attribute form Material expects.
+            safe = title.replace('"', '\\"')
+            out += f' title="{safe}"'
+        return out
+
+    return FENCE_OPEN_RE.sub(repl, text)
 
 
 ORDERED_ITEM_RE = re.compile(r"^(\d+)\.\s")
@@ -680,6 +798,16 @@ def inject_level_front_matter(text: str, rel_path: Path) -> str:
     return f"---\nlevel: {level}\n---\n\n{text}"
 
 
+def strip_mintlify_footer(text: str) -> str:
+    """Remove the Mintlify hosting blurb that Mintlify appends to every page."""
+    return MINTLIFY_FOOTER_RE.sub("", text)
+
+
+def finalize_trailing_blank_lines(text: str, blank_lines: int = 4) -> str:
+    """Ensure the file ends with exactly ``blank_lines`` empty lines after content."""
+    return text.rstrip() + ("\n" * (blank_lines + 1))
+
+
 def transform(text: str, rel_path: Path) -> str:
     text = INDEX_BLOCK_RE.sub("", text)
     text = strip_typesafe_example_helper(text)
@@ -701,19 +829,22 @@ def transform(text: str, rel_path: Path) -> str:
     text = fix_links(text, rel_path)
     text = strip_residual_jsx(text)
     text = continue_ordered_lists(text)
+    text = strip_mintlify_footer(text)
     text = re.sub(r"\n{3,}", "\n\n", text)
-    text = text.strip() + "\n"
-    return inject_level_front_matter(text, rel_path)
+    text = inject_level_front_matter(text, rel_path)
+    return finalize_trailing_blank_lines(text, blank_lines=4)
 
 
 def write_index() -> None:
     (OUT / "index.md").write_text(
-        """# Jev Docs (CN)
+        finalize_trailing_blank_lines(
+            """# Jev Docs (CN)
 
 中文文档站（英文源镜像）。内容同步自 [TypeSafe AI documentation](https://docs.typesafe.ai/introduction)。
 
 **[开始阅读：Introduction →](introduction.md)**
-""",
+"""
+        ),
         encoding="utf-8",
     )
 
@@ -745,6 +876,13 @@ def main() -> None:
         for css in STYLES_SRC.glob("*.css"):
             shutil.copy2(css, styles_dest / css.name)
         print(f"Copied stylesheets → {styles_dest}")
+
+    if JS_SRC.is_dir():
+        js_dest = OUT / "javascripts"
+        js_dest.mkdir(parents=True, exist_ok=True)
+        for js in JS_SRC.glob("*.js"):
+            shutil.copy2(js, js_dest / js.name)
+        print(f"Copied javascripts → {js_dest}")
 
     print(f"Prepared {count} pages + index.md → {OUT}")
 
