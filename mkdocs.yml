@@ -64,123 +64,130 @@ extra:
 nav:
   - Home: index.md
   - Documentation:
-      - Introduction: introduction.md
-      - Quick start: introduction/quickstart.md
-      - Jev with coding agents: introduction/coding-agents.md
-      - Example use cases: concepts/use-case-map.md
-      - System One: concepts/system-one.md
-      - State: concepts/state.md
-      - Primitives (Questions): primitives.md
-      - Choice: primitives/choice.md
-      - Score: primitives/score.md
-      - Noul: primitives/noul.md
-      - Advanced structure: primitives/advanced.md
-      - Confidence: confidence.md
-      - How to build with TypeSafe: concepts/how-to-build-with-system-one.md
-      - AI primer: introduction/machine-learning-primer.md
-      - Patterns: patterns.md
-      - Speculative fan-out: patterns/fan-out.md
-      - Confidence-gated routing: patterns/confidence-routing.md
-      - Composite scoring: patterns/composite-scoring.md
-      - Intent routing: patterns/intent-routing.md
+      - Get started:
+          - Introduction: introduction.md
+          - Quick start: introduction/quickstart.md
+          - Jev with coding agents: introduction/coding-agents.md
+          - AI primer: introduction/machine-learning-primer.md
+      - Concepts:
+          - Example use cases: concepts/use-case-map.md
+          - System One: concepts/system-one.md
+          - State: concepts/state.md
+          - Primitives (Questions): primitives.md
+          - Choice: primitives/choice.md
+          - Score: primitives/score.md
+          - Noul: primitives/noul.md
+          - Advanced structure: primitives/advanced.md
+          - Confidence: confidence.md
+          - How to build with TypeSafe: concepts/how-to-build-with-system-one.md
+      - Patterns:
+          - Patterns: patterns.md
+          - Speculative fan-out: patterns/fan-out.md
+          - Confidence-gated routing: patterns/confidence-routing.md
+          - Composite scoring: patterns/composite-scoring.md
+          - Intent routing: patterns/intent-routing.md
   - Cookbooks:
-      - Overview: cookbooks.md
-      - Self-consistency nouls: cookbooks/consistency_noul_cookbook.md
-      - Self-consistency choices: cookbooks/consistency_choice_cookbook.md
-      - Parallel questions: cookbooks/parallel_questions.md
-      - Re-ranking: cookbooks/rerank_typesafe.md
-      - Line-by-line search: cookbooks/semantic_find.md
-      - Structure recovery: cookbooks/autoformat.md
-      - Function calling: cookbooks/function_calling.md
-      - Skill suggestion: cookbooks/skill_suggestion.md
-      - Entity alignment: cookbooks/entity_alignment.md
-      - Classifying RAG passages: cookbooks/classifying_rag_passages.md
-      - Citation check: cookbooks/citation_check.md
-      - Guardrails for LLMs: cookbooks/llm_guardrails.md
-      - SDE cascade: cookbooks/sde_cascade.md
-      - Date extraction: cookbooks/date_extraction_cookbook.md
-      - Pre-parsed value extraction: cookbooks/pre_parsed_value_extraction_cookbook.md
-      - Hierarchical classification: cookbooks/hierarchical_classification.md
-      - Autoresearch feature discovery: cookbooks/autoresearch_feature_discovery.md
-      - Classification using confidence: cookbooks/classification_using_confidence.md
-      - Demos: demos.md
-      - Smart home assistant demo: demos/smart-home.md
+      - Cookbooks:
+          - Overview: cookbooks.md
+          - Self-consistency nouls: cookbooks/consistency_noul_cookbook.md
+          - Self-consistency choices: cookbooks/consistency_choice_cookbook.md
+          - Parallel questions: cookbooks/parallel_questions.md
+          - Re-ranking: cookbooks/rerank_typesafe.md
+          - Line-by-line search: cookbooks/semantic_find.md
+          - Structure recovery: cookbooks/autoformat.md
+          - Function calling: cookbooks/function_calling.md
+          - Skill suggestion: cookbooks/skill_suggestion.md
+          - Entity alignment: cookbooks/entity_alignment.md
+          - Classifying RAG passages: cookbooks/classifying_rag_passages.md
+          - Citation check: cookbooks/citation_check.md
+          - Guardrails for LLMs: cookbooks/llm_guardrails.md
+          - SDE cascade: cookbooks/sde_cascade.md
+          - Date extraction: cookbooks/date_extraction_cookbook.md
+          - Pre-parsed value extraction: cookbooks/pre_parsed_value_extraction_cookbook.md
+          - Hierarchical classification: cookbooks/hierarchical_classification.md
+          - Autoresearch feature discovery: cookbooks/autoresearch_feature_discovery.md
+          - Classification using confidence: cookbooks/classification_using_confidence.md
+      - Demos:
+          - Demos: demos.md
+          - Smart home assistant demo: demos/smart-home.md
   - Reference:
-      - Models: models.md
-      - API reference: api.md
-      - Agent skill: agent-skill.md
-      - Legal: legal.md
-      - Jev 1.13 jaggedness: model-jaggedness/jev-1.13.md
-      - Client SDKs: sdk.md
-      - Python SDK:
-          - Overview: sdk/python.md
-          - Usage: sdk/python/usage.md
-          - Changelog: sdk/python/changelog.md
-          - API reference: sdk/python/api.md
-          - Asynchronous client: sdk/python/api/clients/async.md
-          - Synchronous client: sdk/python/api/clients/sync.md
-          - Questions: sdk/python/api/types/questions.md
-          - Answers and responses: sdk/python/api/types/responses.md
-          - Retries: sdk/python/api/retries.md
-          - Common types: sdk/python/api/types/common.md
-          - Exceptions: sdk/python/api/exceptions.md
-          - Constants: sdk/python/api/constants.md
-      - JavaScript SDK:
-          - Overview: sdk/javascript.md
-          - Changelog: sdk/javascript/changelog.md
-          - API reference: sdk/javascript/api.md
-          - Classes:
-              - TypeSafeClient: sdk/javascript/api/classes/TypeSafeClient.md
-              - TypeSafeError: sdk/javascript/api/classes/TypeSafeError.md
-              - APIError: sdk/javascript/api/classes/APIError.md
-              - APIConnectionError: sdk/javascript/api/classes/APIConnectionError.md
-              - APITimeoutError: sdk/javascript/api/classes/APITimeoutError.md
-              - APIUserAbortError: sdk/javascript/api/classes/APIUserAbortError.md
-              - APIPromise: sdk/javascript/api/classes/APIPromise.md
-              - AuthenticationError: sdk/javascript/api/classes/AuthenticationError.md
-              - BadRequestError: sdk/javascript/api/classes/BadRequestError.md
-              - InternalServerError: sdk/javascript/api/classes/InternalServerError.md
-              - NotFoundError: sdk/javascript/api/classes/NotFoundError.md
-              - PermissionDeniedError: sdk/javascript/api/classes/PermissionDeniedError.md
-              - RateLimitError: sdk/javascript/api/classes/RateLimitError.md
-              - UnprocessableEntityError: sdk/javascript/api/classes/UnprocessableEntityError.md
-          - Functions:
-              - choice: sdk/javascript/api/functions/choice.md
-              - noul: sdk/javascript/api/functions/noul.md
-              - score: sdk/javascript/api/functions/score.md
-          - Interfaces:
-              - ChoiceQuestion: sdk/javascript/api/interfaces/ChoiceQuestion.md
-              - ChoiceResponse: sdk/javascript/api/interfaces/ChoiceResponse.md
-              - Logger: sdk/javascript/api/interfaces/Logger.md
-              - ModelCard: sdk/javascript/api/interfaces/ModelCard.md
-              - Models: sdk/javascript/api/interfaces/Models.md
-              - NoulQuestion: sdk/javascript/api/interfaces/NoulQuestion.md
-              - NoulResponse: sdk/javascript/api/interfaces/NoulResponse.md
-              - Questions: sdk/javascript/api/interfaces/Questions.md
-              - RequestOptions: sdk/javascript/api/interfaces/RequestOptions.md
-              - RetryPolicy: sdk/javascript/api/interfaces/RetryPolicy.md
-              - ScoreQuestion: sdk/javascript/api/interfaces/ScoreQuestion.md
-              - ScoreResponse: sdk/javascript/api/interfaces/ScoreResponse.md
-              - SystemOneRequest: sdk/javascript/api/interfaces/SystemOneRequest.md
-              - SystemOneRequestPayload: sdk/javascript/api/interfaces/SystemOneRequestPayload.md
-              - SystemOneResult: sdk/javascript/api/interfaces/SystemOneResult.md
-              - TypeSafeClientConfig: sdk/javascript/api/interfaces/TypeSafeClientConfig.md
-              - Usage: sdk/javascript/api/interfaces/Usage.md
-              - WithResponse: sdk/javascript/api/interfaces/WithResponse.md
-          - Type aliases:
-              - ChoiceCriteria: sdk/javascript/api/type-aliases/ChoiceCriteria.md
-              - Description: sdk/javascript/api/type-aliases/Description.md
-              - EntryType: sdk/javascript/api/type-aliases/EntryType.md
-              - EnvVar: sdk/javascript/api/type-aliases/EnvVar.md
-              - Fetch: sdk/javascript/api/type-aliases/Fetch.md
-              - JsonValue: sdk/javascript/api/type-aliases/JsonValue.md
-              - LogLevel: sdk/javascript/api/type-aliases/LogLevel.md
-              - Question: sdk/javascript/api/type-aliases/Question.md
-              - ResultFor: sdk/javascript/api/type-aliases/ResultFor.md
-              - ScoreCriteria: sdk/javascript/api/type-aliases/ScoreCriteria.md
-              - ScoreLegend: sdk/javascript/api/type-aliases/ScoreLegend.md
-              - ScoreOf: sdk/javascript/api/type-aliases/ScoreOf.md
-          - Variables:
-              - ENV: sdk/javascript/api/variables/ENV.md
-              - LOG_LEVELS: sdk/javascript/api/variables/LOG_LEVELS.md
-              - VERSION: sdk/javascript/api/variables/VERSION.md
+      - API:
+          - Models: models.md
+          - API reference: api.md
+          - Agent skill: agent-skill.md
+          - Legal: legal.md
+          - Jev 1.13 jaggedness: model-jaggedness/jev-1.13.md
+      - Client SDKs:
+          - Overview: sdk.md
+          - Python SDK:
+              - Overview: sdk/python.md
+              - Usage: sdk/python/usage.md
+              - Changelog: sdk/python/changelog.md
+              - API reference: sdk/python/api.md
+              - Asynchronous client: sdk/python/api/clients/async.md
+              - Synchronous client: sdk/python/api/clients/sync.md
+              - Questions: sdk/python/api/types/questions.md
+              - Answers and responses: sdk/python/api/types/responses.md
+              - Retries: sdk/python/api/retries.md
+              - Common types: sdk/python/api/types/common.md
+              - Exceptions: sdk/python/api/exceptions.md
+              - Constants: sdk/python/api/constants.md
+          - JavaScript SDK:
+              - Overview: sdk/javascript.md
+              - Changelog: sdk/javascript/changelog.md
+              - API reference: sdk/javascript/api.md
+              - Classes:
+                  - TypeSafeClient: sdk/javascript/api/classes/TypeSafeClient.md
+                  - TypeSafeError: sdk/javascript/api/classes/TypeSafeError.md
+                  - APIError: sdk/javascript/api/classes/APIError.md
+                  - APIConnectionError: sdk/javascript/api/classes/APIConnectionError.md
+                  - APITimeoutError: sdk/javascript/api/classes/APITimeoutError.md
+                  - APIUserAbortError: sdk/javascript/api/classes/APIUserAbortError.md
+                  - APIPromise: sdk/javascript/api/classes/APIPromise.md
+                  - AuthenticationError: sdk/javascript/api/classes/AuthenticationError.md
+                  - BadRequestError: sdk/javascript/api/classes/BadRequestError.md
+                  - InternalServerError: sdk/javascript/api/classes/InternalServerError.md
+                  - NotFoundError: sdk/javascript/api/classes/NotFoundError.md
+                  - PermissionDeniedError: sdk/javascript/api/classes/PermissionDeniedError.md
+                  - RateLimitError: sdk/javascript/api/classes/RateLimitError.md
+                  - UnprocessableEntityError: sdk/javascript/api/classes/UnprocessableEntityError.md
+              - Functions:
+                  - choice: sdk/javascript/api/functions/choice.md
+                  - noul: sdk/javascript/api/functions/noul.md
+                  - score: sdk/javascript/api/functions/score.md
+              - Interfaces:
+                  - ChoiceQuestion: sdk/javascript/api/interfaces/ChoiceQuestion.md
+                  - ChoiceResponse: sdk/javascript/api/interfaces/ChoiceResponse.md
+                  - Logger: sdk/javascript/api/interfaces/Logger.md
+                  - ModelCard: sdk/javascript/api/interfaces/ModelCard.md
+                  - Models: sdk/javascript/api/interfaces/Models.md
+                  - NoulQuestion: sdk/javascript/api/interfaces/NoulQuestion.md
+                  - NoulResponse: sdk/javascript/api/interfaces/NoulResponse.md
+                  - Questions: sdk/javascript/api/interfaces/Questions.md
+                  - RequestOptions: sdk/javascript/api/interfaces/RequestOptions.md
+                  - RetryPolicy: sdk/javascript/api/interfaces/RetryPolicy.md
+                  - ScoreQuestion: sdk/javascript/api/interfaces/ScoreQuestion.md
+                  - ScoreResponse: sdk/javascript/api/interfaces/ScoreResponse.md
+                  - SystemOneRequest: sdk/javascript/api/interfaces/SystemOneRequest.md
+                  - SystemOneRequestPayload: sdk/javascript/api/interfaces/SystemOneRequestPayload.md
+                  - SystemOneResult: sdk/javascript/api/interfaces/SystemOneResult.md
+                  - TypeSafeClientConfig: sdk/javascript/api/interfaces/TypeSafeClientConfig.md
+                  - Usage: sdk/javascript/api/interfaces/Usage.md
+                  - WithResponse: sdk/javascript/api/interfaces/WithResponse.md
+              - Type aliases:
+                  - ChoiceCriteria: sdk/javascript/api/type-aliases/ChoiceCriteria.md
+                  - Description: sdk/javascript/api/type-aliases/Description.md
+                  - EntryType: sdk/javascript/api/type-aliases/EntryType.md
+                  - EnvVar: sdk/javascript/api/type-aliases/EnvVar.md
+                  - Fetch: sdk/javascript/api/type-aliases/Fetch.md
+                  - JsonValue: sdk/javascript/api/type-aliases/JsonValue.md
+                  - LogLevel: sdk/javascript/api/type-aliases/LogLevel.md
+                  - Question: sdk/javascript/api/type-aliases/Question.md
+                  - ResultFor: sdk/javascript/api/type-aliases/ResultFor.md
+                  - ScoreCriteria: sdk/javascript/api/type-aliases/ScoreCriteria.md
+                  - ScoreLegend: sdk/javascript/api/type-aliases/ScoreLegend.md
+                  - ScoreOf: sdk/javascript/api/type-aliases/ScoreOf.md
+              - Variables:
+                  - ENV: sdk/javascript/api/variables/ENV.md
+                  - LOG_LEVELS: sdk/javascript/api/variables/LOG_LEVELS.md
+                  - VERSION: sdk/javascript/api/variables/VERSION.md
