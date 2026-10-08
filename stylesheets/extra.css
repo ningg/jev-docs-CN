@@ -1,0 +1,183 @@
+/* TypeSafe-inspired theme for MkDocs Material */
+
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #e551ba;
+  --md-primary-fg-color--light: #ff71df;
+  --md-primary-fg-color--dark: #a42d71;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #ffffff;
+
+  --md-accent-fg-color: #e551ba;
+  --md-accent-fg-color--transparent: rgba(229, 81, 186, 0.12);
+
+  --md-default-fg-color: #111111;
+  --md-default-fg-color--light: #2c272b;
+  --md-default-fg-color--lighter: #a5a0a4;
+  --md-default-fg-color--lightest: #d4cfd2;
+
+  --md-default-bg-color: #f9f6f9;
+  --md-default-bg-color--light: #f9f6f9;
+  --md-default-bg-color--lighter: #f5f0f3;
+  --md-default-bg-color--lightest: #ffffff;
+
+  --md-code-bg-color: #f5f0f3;
+  --md-code-fg-color: #2c272b;
+
+  --md-typeset-a-color: #c23a9a;
+  --md-typeset-color: #111111;
+
+  --ts-header-bg: #f9f6f9;
+  --ts-header-fg: #111111;
+  --ts-header-fg-muted: #2c272b;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #ff71df;
+  --md-primary-fg-color--light: #ff9ae8;
+  --md-primary-fg-color--dark: #e551ba;
+  --md-accent-fg-color: #ff71df;
+  --md-accent-fg-color--transparent: rgba(255, 113, 223, 0.16);
+
+  --md-typeset-a-color: #ff71df;
+
+  --ts-header-bg: #151215;
+  --ts-header-fg: #f5f0f3;
+  --ts-header-fg-muted: #d4cfd2;
+}
+
+/* Readable content column */
+.md-typeset {
+  font-size: 0.82rem;
+  line-height: 1.75;
+  letter-spacing: 0.005em;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.md-typeset h2,
+.md-typeset h3 {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset code,
+.md-typeset kbd,
+.md-typeset pre {
+  font-variant-ligatures: none;
+}
+
+/* Content links: thin underline by default, thicker on hover */
+.md-typeset a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: currentColor;
+}
+
+.md-typeset a:hover,
+.md-typeset a:focus-visible {
+  text-decoration-thickness: 2.5px;
+  text-decoration-color: currentColor;
+  color: var(--md-primary-fg-color--dark);
+}
+
+[data-md-color-scheme="slate"] .md-typeset a:hover,
+[data-md-color-scheme="slate"] .md-typeset a:focus-visible {
+  color: var(--md-primary-fg-color--light);
+}
+
+/* Keep heading permalinks and code links clean */
+.md-typeset a.headerlink,
+.md-typeset .md-annotation a,
+.md-typeset pre a,
+.md-typeset code a {
+  text-decoration: none;
+  text-decoration-thickness: initial;
+}
+
+.md-typeset a.headerlink:hover,
+.md-typeset a.headerlink:focus-visible {
+  text-decoration: none;
+}
+
+/* Light top bar (TypeSafe-like), pink kept for accents only */
+.md-header {
+  background-color: var(--ts-header-bg);
+  color: var(--ts-header-fg);
+  box-shadow: none;
+  border-bottom: 1px solid rgba(44, 39, 43, 0.08);
+}
+
+.md-header--shadow {
+  box-shadow: none;
+}
+
+.md-header__title,
+.md-header__topic,
+.md-header .md-ellipsis {
+  color: var(--ts-header-fg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.md-header__button {
+  color: var(--ts-header-fg-muted);
+}
+
+.md-header__button:hover {
+  color: var(--ts-header-fg);
+  opacity: 1;
+}
+
+.md-tabs {
+  background-color: var(--ts-header-bg);
+  color: var(--ts-header-fg-muted);
+  border-bottom: 1px solid rgba(44, 39, 43, 0.08);
+}
+
+.md-tabs__link {
+  color: var(--ts-header-fg-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  opacity: 1;
+}
+
+.md-tabs__link:hover {
+  color: var(--ts-header-fg);
+  opacity: 1;
+}
+
+.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link {
+  color: var(--ts-header-fg);
+  font-weight: 650;
+  box-shadow: inset 0 -2px 0 var(--md-primary-fg-color);
+}
+
+/* Search field on light header */
+.md-search__form {
+  background-color: rgba(44, 39, 43, 0.06);
+}
+
+.md-search__input,
+.md-search__input + .md-search__icon {
+  color: var(--ts-header-fg-muted);
+}
+
+.md-search__input::placeholder {
+  color: var(--ts-header-fg-muted);
+}
+
+/* Slightly clearer section labels in the sidebar */
+.md-nav__item--section > .md-nav__link[for] {
+  color: var(--md-default-fg-color--light);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}

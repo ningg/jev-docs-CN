@@ -12,6 +12,28 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "documentation" / "en"
 OUT = ROOT / "docs"
+STYLES_SRC = ROOT / "stylesheets"
+
+# Overview pages that become section indexes for navigation.indexes
+INDEX_RELOCATIONS = {
+    "primitives.md": "primitives/index.md",
+    "patterns.md": "patterns/index.md",
+    "cookbooks.md": "cookbooks/index.md",
+    "demos.md": "demos/index.md",
+    "sdk.md": "sdk/index.md",
+    "sdk/python.md": "sdk/python/index.md",
+    "sdk/javascript.md": "sdk/javascript/index.md",
+}
+
+
+def final_rel(rel: Path) -> Path:
+    return Path(INDEX_RELOCATIONS.get(rel.as_posix(), rel.as_posix()))
+
+
+def final_dest_md(path_part: str) -> str:
+    """Map a site path (with .md) to its final docs-relative location."""
+    return INDEX_RELOCATIONS.get(path_part, path_part)
+
 
 INDEX_BLOCK_RE = re.compile(
     r"^>\s*##\s*Documentation Index\n(?:>.*\n)*\n?",
@@ -507,7 +529,7 @@ def fix_links(text: str, rel_path: Path) -> str:
             return "#" + frag if frag else target
         if not path_part.endswith(".md"):
             path_part = path_part + ".md"
-        dest = Path(path_part)
+        dest = Path(final_dest_md(path_part))
         start_dir = rel_path.parent
         rel = Path(os.path.relpath(dest.as_posix(), start=start_dir.as_posix() or "."))
         out = rel.as_posix()
@@ -589,13 +611,23 @@ def main() -> None:
     count = 0
     for src_file in sorted(SRC.rglob("*.md")):
         rel = src_file.relative_to(SRC)
-        dest = OUT / rel
+        out_rel = final_rel(rel)
+        dest = OUT / out_rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         raw = src_file.read_text(encoding="utf-8")
-        dest.write_text(transform(raw, rel), encoding="utf-8")
+        dest.write_text(transform(raw, out_rel), encoding="utf-8")
         count += 1
 
     write_index()
+
+    # Copy theme assets that live outside the wiped docs/ tree
+    if STYLES_SRC.is_dir():
+        styles_dest = OUT / "stylesheets"
+        styles_dest.mkdir(parents=True, exist_ok=True)
+        for css in STYLES_SRC.glob("*.css"):
+            shutil.copy2(css, styles_dest / css.name)
+        print(f"Copied stylesheets → {styles_dest}")
+
     print(f"Prepared {count} pages + index.md → {OUT}")
 
 

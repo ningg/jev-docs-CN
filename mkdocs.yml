@@ -12,9 +12,13 @@ copyright: Content mirrored from docs.typesafe.ai for translation and local brow
 theme:
   name: material
   language: en
+  font:
+    text: Inter
+    code: Roboto Mono
   features:
     - navigation.tabs
     - navigation.sections
+    - navigation.indexes
     - navigation.expand
     - navigation.instant
     - navigation.tracking
@@ -25,20 +29,23 @@ theme:
     - search.highlight
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
 
 plugins:
   - search
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - meta
@@ -73,22 +80,23 @@ nav:
           - Example use cases: concepts/use-case-map.md
           - System One: concepts/system-one.md
           - State: concepts/state.md
-          - Primitives (Questions): primitives.md
-          - Choice: primitives/choice.md
-          - Score: primitives/score.md
-          - Noul: primitives/noul.md
-          - Advanced structure: primitives/advanced.md
+          - Primitives (Questions):
+              - primitives/index.md
+              - Choice: primitives/choice.md
+              - Score: primitives/score.md
+              - Noul: primitives/noul.md
+              - Advanced structure: primitives/advanced.md
           - Confidence: confidence.md
           - How to build with TypeSafe: concepts/how-to-build-with-system-one.md
       - Patterns:
-          - Patterns: patterns.md
+          - patterns/index.md
           - Speculative fan-out: patterns/fan-out.md
           - Confidence-gated routing: patterns/confidence-routing.md
           - Composite scoring: patterns/composite-scoring.md
           - Intent routing: patterns/intent-routing.md
   - Cookbooks:
       - Cookbooks:
-          - Overview: cookbooks.md
+          - cookbooks/index.md
           - Self-consistency nouls: cookbooks/consistency_noul_cookbook.md
           - Self-consistency choices: cookbooks/consistency_choice_cookbook.md
           - Parallel questions: cookbooks/parallel_questions.md
@@ -108,7 +116,7 @@ nav:
           - Autoresearch feature discovery: cookbooks/autoresearch_feature_discovery.md
           - Classification using confidence: cookbooks/classification_using_confidence.md
       - Demos:
-          - Demos: demos.md
+          - demos/index.md
           - Smart home assistant demo: demos/smart-home.md
   - Reference:
       - API:
@@ -118,9 +126,9 @@ nav:
           - Legal: legal.md
           - Jev 1.13 jaggedness: model-jaggedness/jev-1.13.md
       - Client SDKs:
-          - Overview: sdk.md
+          - sdk/index.md
           - Python SDK:
-              - Overview: sdk/python.md
+              - sdk/python/index.md
               - Usage: sdk/python/usage.md
               - Changelog: sdk/python/changelog.md
               - API reference: sdk/python/api.md
@@ -133,7 +141,7 @@ nav:
               - Exceptions: sdk/python/api/exceptions.md
               - Constants: sdk/python/api/constants.md
           - JavaScript SDK:
-              - Overview: sdk/javascript.md
+              - sdk/javascript/index.md
               - Changelog: sdk/javascript/changelog.md
               - API reference: sdk/javascript/api.md
               - Classes:
