@@ -541,6 +541,83 @@ def clean_fences(text: str) -> str:
     return FENCE_META_RE.sub(repl, text)
 
 
+ORDERED_ITEM_RE = re.compile(r"^(\d+)\.\s")
+# ## / ### break a list; ####+ (e.g. converted Tabs) may nest under the prior item.
+SECTION_HEADING_RE = re.compile(r"^#{1,3}\s")
+
+
+def continue_ordered_lists(text: str) -> str:
+    """Nest blocks that interrupt an ordered list so numbering stays continuous.
+
+    A column-0 fence (or other content) between ``2.`` and ``3.`` makes
+    Python-Markdown start a new ``<ol>`` at 1. Indenting that content under
+    the previous item keeps a single list.
+    """
+    lines = text.split("\n")
+    result: list[str] = []
+    i = 0
+    n = len(lines)
+
+    while i < n:
+        line = lines[i]
+        if not ORDERED_ITEM_RE.match(line):
+            result.append(line)
+            i += 1
+            continue
+
+        # Ordered-list run: keep nesting interrupters until a real break.
+        result.append(line)
+        i += 1
+        while i < n:
+            while i < n and (lines[i].startswith(("    ", "\t"))):
+                result.append(lines[i])
+                i += 1
+
+            blank_start = i
+            while i < n and lines[i].strip() == "":
+                i += 1
+
+            if i >= n:
+                result.extend(lines[blank_start:i])
+                break
+
+            if SECTION_HEADING_RE.match(lines[i]):
+                result.extend(lines[blank_start:i])
+                break
+
+            if ORDERED_ITEM_RE.match(lines[i]):
+                result.append("")
+                result.append(lines[i])
+                i += 1
+                continue
+
+            block_start = i
+            while i < n:
+                if SECTION_HEADING_RE.match(lines[i]):
+                    break
+                if ORDERED_ITEM_RE.match(lines[i]):
+                    break
+                i += 1
+
+            nxt = ORDERED_ITEM_RE.match(lines[i]) if i < n else None
+            if nxt and int(nxt.group(1)) > 1:
+                result.append("")
+                for j in range(block_start, i):
+                    if lines[j].strip() == "":
+                        result.append("")
+                    else:
+                        # Always nest one list level. Do not skip lines that
+                        # already have 4 spaces — that is often code indent
+                        # (e.g. JSON), not list nesting.
+                        result.append("    " + lines[j])
+                continue
+
+            result.extend(lines[blank_start:i])
+            break
+
+    return "\n".join(result)
+
+
 def fix_links(text: str, rel_path: Path) -> str:
     def rel_target(target: str) -> str:
         if target.startswith(("http://", "https://", "mailto:", "#")):
@@ -623,6 +700,7 @@ def transform(text: str, rel_path: Path) -> str:
     text = clean_fences(text)
     text = fix_links(text, rel_path)
     text = strip_residual_jsx(text)
+    text = continue_ordered_lists(text)
     text = re.sub(r"\n{3,}", "\n\n", text)
     text = text.strip() + "\n"
     return inject_level_front_matter(text, rel_path)

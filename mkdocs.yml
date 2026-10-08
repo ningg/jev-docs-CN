@@ -129,79 +129,83 @@ nav:
           - API reference: api.md
           - Agent skill: agent-skill.md
           - Legal: legal.md
-          - Model jaggedness: model-jaggedness/jev-1.13.md
+          - Model jaggedness:
+              - "Jev 1.13": model-jaggedness/jev-1.13.md
       - Client SDKs:
           - Client SDKs: sdk/index.md
           - Python SDK:
-              - sdk/python/index.md
+              - TypeSafe Python SDK: sdk/python/index.md
               - Usage: sdk/python/usage.md
               - Changelog: sdk/python/changelog.md
-              - API reference: sdk/python/api.md
-              - Asynchronous client: sdk/python/api/clients/async.md
-              - Synchronous client: sdk/python/api/clients/sync.md
-              - Questions: sdk/python/api/types/questions.md
-              - Answers and responses: sdk/python/api/types/responses.md
-              - Retries: sdk/python/api/retries.md
-              - Common types: sdk/python/api/types/common.md
-              - Exceptions: sdk/python/api/exceptions.md
-              - Constants: sdk/python/api/constants.md
+              - API reference:
+                  - API reference: sdk/python/api.md
+                  - Clients:
+                      - Asynchronous client: sdk/python/api/clients/async.md
+                      - Synchronous client: sdk/python/api/clients/sync.md
+                  - Types:
+                      - Questions: sdk/python/api/types/questions.md
+                      - Answers and responses: sdk/python/api/types/responses.md
+                      - Retries: sdk/python/api/retries.md
+                      - Common types: sdk/python/api/types/common.md
+                  - Exceptions: sdk/python/api/exceptions.md
+                  - Constants: sdk/python/api/constants.md
           - JavaScript SDK:
               - JavaScript SDK: sdk/javascript/index.md
               - Changelog: sdk/javascript/changelog.md
-              - API reference: 
-                    - API reference: sdk/javascript/api.md
-                    - Classes:
-                        - TypeSafeClient: sdk/javascript/api/classes/TypeSafeClient.md
-                        - TypeSafeError: sdk/javascript/api/classes/TypeSafeError.md
-                        - APIError: sdk/javascript/api/classes/APIError.md
-                        - APIConnectionError: sdk/javascript/api/classes/APIConnectionError.md
-                        - APITimeoutError: sdk/javascript/api/classes/APITimeoutError.md
-                        - APIUserAbortError: sdk/javascript/api/classes/APIUserAbortError.md
-                        - APIPromise: sdk/javascript/api/classes/APIPromise.md
-                        - AuthenticationError: sdk/javascript/api/classes/AuthenticationError.md
-                        - BadRequestError: sdk/javascript/api/classes/BadRequestError.md
-                        - InternalServerError: sdk/javascript/api/classes/InternalServerError.md
-                        - NotFoundError: sdk/javascript/api/classes/NotFoundError.md
-                        - PermissionDeniedError: sdk/javascript/api/classes/PermissionDeniedError.md
-                        - RateLimitError: sdk/javascript/api/classes/RateLimitError.md
-                        - UnprocessableEntityError: sdk/javascript/api/classes/UnprocessableEntityError.md
-                    - Interfaces:
-                        - ChoiceQuestion: sdk/javascript/api/interfaces/ChoiceQuestion.md
-                        - ChoiceResponse: sdk/javascript/api/interfaces/ChoiceResponse.md
-                        - Logger: sdk/javascript/api/interfaces/Logger.md
-                        - ModelCard: sdk/javascript/api/interfaces/ModelCard.md
-                        - Models: sdk/javascript/api/interfaces/Models.md
-                        - NoulQuestion: sdk/javascript/api/interfaces/NoulQuestion.md
-                        - NoulResponse: sdk/javascript/api/interfaces/NoulResponse.md
-                        - Questions: sdk/javascript/api/interfaces/Questions.md
-                        - RequestOptions: sdk/javascript/api/interfaces/RequestOptions.md
-                        - RetryPolicy: sdk/javascript/api/interfaces/RetryPolicy.md
-                        - ScoreQuestion: sdk/javascript/api/interfaces/ScoreQuestion.md
-                        - ScoreResponse: sdk/javascript/api/interfaces/ScoreResponse.md
-                        - SystemOneRequest: sdk/javascript/api/interfaces/SystemOneRequest.md
-                        - SystemOneRequestPayload: sdk/javascript/api/interfaces/SystemOneRequestPayload.md
-                        - SystemOneResult: sdk/javascript/api/interfaces/SystemOneResult.md
-                        - TypeSafeClientConfig: sdk/javascript/api/interfaces/TypeSafeClientConfig.md
-                        - Usage: sdk/javascript/api/interfaces/Usage.md
-                        - WithResponse: sdk/javascript/api/interfaces/WithResponse.md
-                    - Type aliases:
-                        - ChoiceCriteria: sdk/javascript/api/type-aliases/ChoiceCriteria.md
-                        - Description: sdk/javascript/api/type-aliases/Description.md
-                        - EntryType: sdk/javascript/api/type-aliases/EntryType.md
-                        - EnvVar: sdk/javascript/api/type-aliases/EnvVar.md
-                        - Fetch: sdk/javascript/api/type-aliases/Fetch.md
-                        - JsonValue: sdk/javascript/api/type-aliases/JsonValue.md
-                        - LogLevel: sdk/javascript/api/type-aliases/LogLevel.md
-                        - Question: sdk/javascript/api/type-aliases/Question.md
-                        - ResultFor: sdk/javascript/api/type-aliases/ResultFor.md
-                        - ScoreCriteria: sdk/javascript/api/type-aliases/ScoreCriteria.md
-                        - ScoreLegend: sdk/javascript/api/type-aliases/ScoreLegend.md
-                        - ScoreOf: sdk/javascript/api/type-aliases/ScoreOf.md
-                    - Variables:
-                        - ENV: sdk/javascript/api/variables/ENV.md
-                        - LOG_LEVELS: sdk/javascript/api/variables/LOG_LEVELS.md
-                        - VERSION: sdk/javascript/api/variables/VERSION.md
-                    - Functions:
-                        - choice: sdk/javascript/api/functions/choice.md
-                        - noul: sdk/javascript/api/functions/noul.md
-                        - score: sdk/javascript/api/functions/score.md
+              - API reference:
+                  - API reference: sdk/javascript/api.md
+                  - Classes:
+                      - "Class: APIConnectionError": sdk/javascript/api/classes/APIConnectionError.md
+                      - "Class: APIError": sdk/javascript/api/classes/APIError.md
+                      - "Class: APIPromise<T>": sdk/javascript/api/classes/APIPromise.md
+                      - "Class: APITimeoutError": sdk/javascript/api/classes/APITimeoutError.md
+                      - "Class: APIUserAbortError": sdk/javascript/api/classes/APIUserAbortError.md
+                      - "Class: AuthenticationError": sdk/javascript/api/classes/AuthenticationError.md
+                      - "Class: BadRequestError": sdk/javascript/api/classes/BadRequestError.md
+                      - "Class: InternalServerError": sdk/javascript/api/classes/InternalServerError.md
+                      - "Class: NotFoundError": sdk/javascript/api/classes/NotFoundError.md
+                      - "Class: PermissionDeniedError": sdk/javascript/api/classes/PermissionDeniedError.md
+                      - "Class: RateLimitError": sdk/javascript/api/classes/RateLimitError.md
+                      - "Class: TypeSafeClient": sdk/javascript/api/classes/TypeSafeClient.md
+                      - "Class: TypeSafeError": sdk/javascript/api/classes/TypeSafeError.md
+                      - "Class: UnprocessableEntityError": sdk/javascript/api/classes/UnprocessableEntityError.md
+                  - Interfaces:
+                      - "Interface: ChoiceQuestion<T>": sdk/javascript/api/interfaces/ChoiceQuestion.md
+                      - "Interface: ChoiceResponse<T>": sdk/javascript/api/interfaces/ChoiceResponse.md
+                      - "Interface: Logger": sdk/javascript/api/interfaces/Logger.md
+                      - "Interface: ModelCard": sdk/javascript/api/interfaces/ModelCard.md
+                      - "Interface: Models": sdk/javascript/api/interfaces/Models.md
+                      - "Interface: NoulQuestion": sdk/javascript/api/interfaces/NoulQuestion.md
+                      - "Interface: NoulResponse": sdk/javascript/api/interfaces/NoulResponse.md
+                      - "Interface: Questions": sdk/javascript/api/interfaces/Questions.md
+                      - "Interface: RequestOptions": sdk/javascript/api/interfaces/RequestOptions.md
+                      - "Interface: RetryPolicy": sdk/javascript/api/interfaces/RetryPolicy.md
+                      - "Interface: ScoreQuestion<T>": sdk/javascript/api/interfaces/ScoreQuestion.md
+                      - "Interface: ScoreResponse<T>": sdk/javascript/api/interfaces/ScoreResponse.md
+                      - "Interface: SystemOneRequest<Q>": sdk/javascript/api/interfaces/SystemOneRequest.md
+                      - "Interface: SystemOneRequestPayload": sdk/javascript/api/interfaces/SystemOneRequestPayload.md
+                      - "Interface: SystemOneResult<Q>": sdk/javascript/api/interfaces/SystemOneResult.md
+                      - "Interface: TypeSafeClientConfig": sdk/javascript/api/interfaces/TypeSafeClientConfig.md
+                      - "Interface: Usage": sdk/javascript/api/interfaces/Usage.md
+                      - "Interface: WithResponse<T>": sdk/javascript/api/interfaces/WithResponse.md
+                  - Type Aliases:
+                      - "Type Alias: ChoiceCriteria": sdk/javascript/api/type-aliases/ChoiceCriteria.md
+                      - "Type Alias: Description": sdk/javascript/api/type-aliases/Description.md
+                      - "Type Alias: EntryType": sdk/javascript/api/type-aliases/EntryType.md
+                      - "Type Alias: EnvVar": sdk/javascript/api/type-aliases/EnvVar.md
+                      - "Type Alias: Fetch": sdk/javascript/api/type-aliases/Fetch.md
+                      - "Type Alias: JsonValue": sdk/javascript/api/type-aliases/JsonValue.md
+                      - "Type Alias: LogLevel": sdk/javascript/api/type-aliases/LogLevel.md
+                      - "Type Alias: Question": sdk/javascript/api/type-aliases/Question.md
+                      - "Type Alias: ResultFor<T>": sdk/javascript/api/type-aliases/ResultFor.md
+                      - "Type Alias: ScoreCriteria": sdk/javascript/api/type-aliases/ScoreCriteria.md
+                      - "Type Alias: ScoreLegend<T>": sdk/javascript/api/type-aliases/ScoreLegend.md
+                      - "Type Alias: ScoreOf<T>": sdk/javascript/api/type-aliases/ScoreOf.md
+                  - Variables:
+                      - "Variable: ENV": sdk/javascript/api/variables/ENV.md
+                      - "Variable: LOG_LEVELS": sdk/javascript/api/variables/LOG_LEVELS.md
+                      - "Variable: VERSION": sdk/javascript/api/variables/VERSION.md
+                  - Functions:
+                      - "Function: choice()": sdk/javascript/api/functions/choice.md
+                      - "Function: noul()": sdk/javascript/api/functions/noul.md
+                      - "Function: score()": sdk/javascript/api/functions/score.md
