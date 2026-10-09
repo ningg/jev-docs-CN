@@ -16,11 +16,9 @@ INDEX_TEMPLATE = ROOT / "index-template.md"
 STYLES_SRC = ROOT / "stylesheets"
 JS_SRC = ROOT / "javascripts"
 
-# Repo-root index-template.md links into documentation/en/; drop that prefix
-# so the generated docs/index.md points at converted MkDocs pages.
-INDEX_TEMPLATE_DOC_PREFIX_RE = re.compile(
-    r"(\[[^\]]*\]\()(?:\./)?documentation/en/"
-)
+# Repo-root index-template.md links into documentation/en/; rewrite them
+# onto the converted MkDocs paths (including index relocations).
+INDEX_TEMPLATE_SRC_PREFIX = "documentation/en/"
 
 # Overview pages that become section indexes for navigation.indexes
 INDEX_RELOCATIONS = {
@@ -843,8 +841,24 @@ def transform(text: str, rel_path: Path) -> str:
 
 
 def rewrite_index_template_links(text: str) -> str:
-    """Strip ``documentation/en/`` from relative Markdown link targets."""
-    return INDEX_TEMPLATE_DOC_PREFIX_RE.sub(r"\1", text)
+    """Map repo-root template links onto generated docs/ paths."""
+
+    def repl(m: re.Match[str]) -> str:
+        label, href = m.group(1), m.group(2)
+        if href.startswith(("http://", "https://", "mailto:", "#")):
+            return m.group(0)
+        path_part, frag = (href.split("#", 1) + [""])[:2]
+        path_part = path_part.lstrip("./")
+        if path_part.startswith(INDEX_TEMPLATE_SRC_PREFIX):
+            path_part = path_part[len(INDEX_TEMPLATE_SRC_PREFIX) :]
+        if path_part.endswith(".md"):
+            path_part = final_dest_md(path_part)
+        out = path_part
+        if frag:
+            out += "#" + frag
+        return f"[{label}]({out})"
+
+    return re.sub(r"\[([^\]]+)\]\(([^)]+)\)", repl, text)
 
 
 def write_index() -> None:
