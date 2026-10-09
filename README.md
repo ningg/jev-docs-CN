@@ -25,5 +25,45 @@ Jev 模型 官方说明（TypeSafe），中文文档，中英文，最新版本�
 * 共同建设：利用 SEO 等，对外宣传当前工作和计划，吸引更多相同志趣的人，一起建设
 
 
+## 3.本地预览
+
+侧边栏由 `mkdocs.yml` 里的 `nav` 手写维护，**无需单独生成**。
+
+但 `docs/` 不入库（见 `.gitignore`），需从 `documentation/en/` 转换生成后再预览。
+
+```bash
+# 1. 首次：创建虚拟环境并安装依赖
+python3 -m venv .venv-docs
+source .venv-docs/bin/activate
+pip install -r requirements-docs.txt
+
+# 2. 每次改了 documentation/en/ 之后：生成 MkDocs 输入目录 docs/
+python scripts/prepare-mkdocs-docs.py
+
+# 3. 启动本地预览（热更新；监听 docs/ 与 mkdocs.yml）
+mkdocs serve -a 127.0.0.1:8000
+```
+
+浏览器打开：http://127.0.0.1:8000/jev-docs-CN/
+
+可选：
+
+```bash
+# 重新从官网拉取英文原文到 documentation/en/（一般不需要）
+bash scripts/download-en-docs.sh
+
+# 仅构建静态站点到 site/（不启服务）
+mkdocs build
+```
+
+| 命令 | 何时需要 |
+| --- | --- |
+| `pip install -r requirements-docs.txt` | 首次 / 依赖变更 |
+| `python scripts/prepare-mkdocs-docs.py` | 改了 `documentation/en/` 或刚 clone |
+| `mkdocs serve` | 日常预览 |
+| `bash scripts/download-en-docs.sh` | 可选，重新拉官网英文原文 |
+| `mkdocs build` | 可选，只构建到 `site/` |
+
+
 
 
