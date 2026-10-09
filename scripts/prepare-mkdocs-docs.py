@@ -12,8 +12,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "documentation" / "en"
 OUT = ROOT / "docs"
+INDEX_TEMPLATE = ROOT / "index-template.md"
 STYLES_SRC = ROOT / "stylesheets"
 JS_SRC = ROOT / "javascripts"
+
+# Repo-root index-template.md links into documentation/en/; drop that prefix
+# so the generated docs/index.md points at converted MkDocs pages.
+INDEX_TEMPLATE_DOC_PREFIX_RE = re.compile(
+    r"(\[[^\]]*\]\()(?:\./)?documentation/en/"
+)
 
 # Overview pages that become section indexes for navigation.indexes
 INDEX_RELOCATIONS = {
@@ -835,16 +842,17 @@ def transform(text: str, rel_path: Path) -> str:
     return finalize_trailing_blank_lines(text, blank_lines=4)
 
 
+def rewrite_index_template_links(text: str) -> str:
+    """Strip ``documentation/en/`` from relative Markdown link targets."""
+    return INDEX_TEMPLATE_DOC_PREFIX_RE.sub(r"\1", text)
+
+
 def write_index() -> None:
+    if not INDEX_TEMPLATE.is_file():
+        raise SystemExit(f"Missing index template: {INDEX_TEMPLATE}")
+    text = rewrite_index_template_links(INDEX_TEMPLATE.read_text(encoding="utf-8"))
     (OUT / "index.md").write_text(
-        finalize_trailing_blank_lines(
-            """# Jev Docs (CN)
-
-中文文档站（英文源镜像）。内容同步自 [TypeSafe AI documentation](https://docs.typesafe.ai/introduction)。
-
-**[开始阅读：Introduction →](introduction.md)**
-"""
-        ),
+        finalize_trailing_blank_lines(text),
         encoding="utf-8",
     )
 
