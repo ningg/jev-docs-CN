@@ -349,6 +349,3 @@ if frustration.score > 1.5:
 ```
 
 Everything needed for the full decision tree comes from one call. Speculative questions are ignored when irrelevant and save a round trip when they are not.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

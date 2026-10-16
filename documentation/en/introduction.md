@@ -68,6 +68,3 @@ For example, instead of "rate this startup pitch," ask separately about market s
 * [Primitives (Questions)](/primitives) — How to define questions, choose between Choice, Score, and Noul, and ask several at once.
 * [Confidence](/confidence) — How TypeSafe reports certainty, and how to use it architecturally.
 * [Patterns](/patterns) — Common patterns for building systems with TypeSafe.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

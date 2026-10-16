@@ -566,6 +566,3 @@ The same building blocks show up elsewhere in TypeSafe's docs:
   several questions about one document in a single call.
 * [Line-by-line Search](/cookbooks/semantic_find),
   for another way to search a corpus by meaning rather than keywords.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

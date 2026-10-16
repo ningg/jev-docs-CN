@@ -51,6 +51,3 @@ readonly logLevel: "TYPESAFE_LOG_LEVEL" = "TYPESAFE_LOG_LEVEL";
 ```
 
 Log level; defaults to `warn`.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

@@ -921,6 +921,3 @@ handler rather than a skill, [Confidence](/confidence) for
 picking the two thresholds, and
 [Speculative Fan-Out](/patterns/fan-out) for putting every
 question in one request.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

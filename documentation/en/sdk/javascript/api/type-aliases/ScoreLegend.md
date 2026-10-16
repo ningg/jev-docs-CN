@@ -15,6 +15,3 @@ Rubric descriptions keyed by score.
 ### T
 
 `T` *extends* [`ScoreCriteria`](/sdk/javascript/api/type-aliases/ScoreCriteria)
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

@@ -329,6 +329,3 @@ def route_ticket(ticket_id, response):
 One intent routes to deterministic code with no LLM involved. Two route to different specialist LLMs, each loaded with different context. One uses the complexity score to decide between an LLM and a human. TypeSafe handles the classification all in a single quick call; the expensive resources only get invoked for the requests that actually need them.
 
 Note the additional confidence check on the complexity score. As discussed in [Confidence](/confidence), it is always important to consider the meaning of a low confidence score in the context of the system and the stakes of the decision.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

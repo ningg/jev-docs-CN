@@ -14,6 +14,3 @@
 * [Retries](/sdk/python/api/retries)
 * [Exceptions](/sdk/python/api/exceptions)
 * [Constants](/sdk/python/api/constants)
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

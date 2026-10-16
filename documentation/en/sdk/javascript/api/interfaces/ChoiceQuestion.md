@@ -45,6 +45,3 @@ The question as text, a JSON object, or an array; optional or `null`.
 ```ts theme={null}
 type: "choice";
 ```
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

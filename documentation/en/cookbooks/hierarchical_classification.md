@@ -874,6 +874,3 @@ The diagrams show why the methods differ. Orange marks the greedy route, green m
 ### CookSafe files
 
 <img src="https://mintcdn.com/ts-docs/2NirYCl-v96cw05F/cookbooks/hierarchical_classification/codebase_tree.svg?fit=max&auto=format&n=2NirYCl-v96cw05F&q=85&s=052f2001a9e5f53a2647eb179ebdafd9" alt="" width="2156" height="1072" data-path="cookbooks/hierarchical_classification/codebase_tree.svg" />
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

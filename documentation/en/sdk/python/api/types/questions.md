@@ -1471,6 +1471,3 @@ A nonempty, ordered list of text, object, or array descriptions, one per score f
 </SdkSignature>
 
 A question dictionary identified by its `type` key.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

@@ -108,6 +108,3 @@ The most important thing for humans to review is the questions and any threshold
 ### The agent invents request or response fields
 
 A stale skill can cause this. Update it using your installation method above and retry.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

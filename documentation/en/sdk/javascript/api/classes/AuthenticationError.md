@@ -152,6 +152,3 @@ Create the error subclass for an HTTP status code.
 #### Inherited from
 
 [`APIError`](/sdk/javascript/api/classes/APIError).[`fromResponse`](/sdk/javascript/api/classes/APIError#sdk-fromresponse)
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

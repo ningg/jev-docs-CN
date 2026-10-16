@@ -137,6 +137,3 @@ In some cases, we observed that the order of a [Choice](/primitives/choice)'s op
 <Tip>
   Found a failure mode that belongs on this list? We want to hear about it. Reach us on [Discord](https://discord.com/invite/WUujKYBp8s).
 </Tip>
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

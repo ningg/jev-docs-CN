@@ -1636,6 +1636,3 @@ Human-readable description of the model and its capabilities.
 </SdkSignature>
 
 Model release date, formatted as YYYY-MM-DD.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

@@ -66,6 +66,3 @@ Assign inputs to categories at any depth.
 <Tip>
   We're always keen to learn how people are making use of our primitives. If you've built something worth a cookbook, drop us a note!
 </Tip>
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

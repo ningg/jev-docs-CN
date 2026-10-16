@@ -336,6 +336,3 @@ Errors use standard HTTP status codes with a JSON body describing what went wron
 ### Handling rate limits
 
 When you receive a `429 Too Many Requests` or `529 Overloaded` response, retry the request with exponential backoff instead of retrying immediately. Our client SDKs handle this automatically, so no extra handling is needed if you use one of our SDKs with its default retry policy.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

@@ -89,6 +89,3 @@ Mode dropping is a milder version of **mode collapse**. In the classic generativ
 </Accordion>
 
 RLHF remains a good fit for conversational models. TypeSafe's position is that production automation needs a different training objective—one centered on constrained decisions and calibrated uncertainty.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

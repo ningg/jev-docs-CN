@@ -27,6 +27,3 @@ List the models available to the account.
 #### Returns
 
 [`APIPromise`](/sdk/javascript/api/classes/APIPromise)\<[`ModelCard`](/sdk/javascript/api/interfaces/ModelCard)\[]>
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

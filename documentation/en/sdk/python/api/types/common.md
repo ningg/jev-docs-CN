@@ -58,6 +58,3 @@ A JSON-like value. May be nested and contain `None`.
 </SdkSignature>
 
 Either a plain string or a mapping/sequence of [`JSONValue`](/sdk/python/api/types/common#typesafe_sdk.JSONValue) entries.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

@@ -53,6 +53,3 @@ state: EntryType;
 ```
 
 Text, a JSON object or array, or `null` to evaluate.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

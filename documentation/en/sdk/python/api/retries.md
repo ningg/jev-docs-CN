@@ -428,6 +428,3 @@ An optional predicate called with the raised exception; returning `True` trigger
 Total retry budget in seconds per SDK call, including the initial attempt and delays; `None` disables the limit.
 
 Stops before a retry whose delay would reach or exceed the budget, re-raising the last error.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

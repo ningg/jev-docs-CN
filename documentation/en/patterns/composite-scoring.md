@@ -341,6 +341,3 @@ em_score = (0.15 * py) + (0.40 * lead) + (0.20 * arch) + (0.25 * general)
 ```
 
 This gives you the ability to rank the candidates based on the composite score. But more importantly, it gives you visibility into how exactly the final score is being calculated. If the highest ranking candidates are not matching your expectations, you can adjust the weights to find the right balance.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

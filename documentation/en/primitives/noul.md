@@ -566,6 +566,3 @@ Take a look at our cookbooks to see apps using Noul questions:
 * [Re-ranking](/cookbooks/rerank_typesafe) uses the probability itself, not a threshold: one Noul per query-candidate pair, then sorts candidates by the value.
 * [Line-by-line search](/cookbooks/semantic_find) pairs a Choice that finds the matching line with a Noul that checks whether the document contains an answer at all.
 * [Structure recovery](/cookbooks/autoformat) asks one Noul per pair of lines, whether a line break split a sentence, to rebuild paragraphs from plain text.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

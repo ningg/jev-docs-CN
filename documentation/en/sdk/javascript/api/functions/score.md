@@ -33,6 +33,3 @@ At least two descriptions indexed by score from zero; entries may be `null`.
 ## Returns
 
 [`ScoreQuestion`](/sdk/javascript/api/interfaces/ScoreQuestion)\<`T`>
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

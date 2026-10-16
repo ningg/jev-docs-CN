@@ -103,6 +103,3 @@ Jev is not trained on customer requests or responses. See [Legal](/legal) for th
 </ResponseField>
 
 See the [Python](/sdk/python/api/clients/sync#typesafe_sdk.Models.list) and [JavaScript](/sdk/javascript/api/interfaces/Models) SDK references for the full method signatures.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

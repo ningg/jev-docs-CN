@@ -68,6 +68,3 @@
 * [choice](/sdk/javascript/api/functions/choice)
 * [noul](/sdk/javascript/api/functions/noul)
 * [score](/sdk/javascript/api/functions/score)
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

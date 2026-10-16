@@ -53,6 +53,3 @@ Answers from System One models also include [confidence](/confidence), so you ca
 Call a System One model through one of our [client SDKs](/sdk) or `POST /v1/systemone` in the [HTTP API](/api). The `model` field selects which model handles the request. The examples in these docs use `jev-latest`, which is also the SDK default. See [Models](/models) for the available models, their prices, and their aliases.
 
 Start with [State](/concepts/state) to prepare the input and [Primitives (Questions)](/primitives) to explore the types of questions you can ask.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

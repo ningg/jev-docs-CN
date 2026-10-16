@@ -647,6 +647,3 @@ The sentence introducing the team list is genuinely ambiguous - it names what fo
 go. The probabilities spread accordingly (paragraph 0.53, list\_item 0.24, callout 0.19),
 and a UI can surface that - for example, underline for review any block whose type
 confidence (the probability behind the winning choice) is under 0.55.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

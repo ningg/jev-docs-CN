@@ -306,6 +306,3 @@ else:
 The 0.6 floor catches anything the model is genuinely uncertain about. Above that floor, each action type has its own threshold based on the consequences of acting on a wrong classification. Checking a balance at 0.6 is fine because the worst case is the user having to listen to the balance read-out. But approving a transfer requires very high confidence (>0.85), otherwise the system should ask the user to confirm.
 
 See [Confidence](/confidence) for more details on how to think about confidence in your systems.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

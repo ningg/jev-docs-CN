@@ -312,6 +312,3 @@ display(
   have regexes that cover them; a name does not, so its candidates have to come from a
   roster you already have, or from a named-entity recognizer or an LLM that proposes
   them. TypeSafe then picks the one the question asks for.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

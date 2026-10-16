@@ -332,6 +332,3 @@ from typesafe_sdk import TypeSafeClient
 with TypeSafeClient() as client:
     models = client.models.list()
 ```
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

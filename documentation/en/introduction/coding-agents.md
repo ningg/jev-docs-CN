@@ -46,6 +46,3 @@ If any of that matches what you're building, the fastest path in is the [Quick s
 * [Quick start](/introduction/quickstart) — Try Jev in the Playground, over HTTP, or with the Python SDK.
 * [Agent skill](/agent-skill) — Give your coding agent context on the TypeSafe API.
 * [Patterns](/patterns) — Common architectures for building with TypeSafe.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

@@ -47,6 +47,3 @@ response: Response;
 ```
 
 The HTTP response, with its body consumed by parsing.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

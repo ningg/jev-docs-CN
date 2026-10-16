@@ -142,6 +142,3 @@ Create the error subclass for an HTTP status code.
 #### Returns
 
 `APIError`
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

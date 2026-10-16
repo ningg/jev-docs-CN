@@ -228,6 +228,3 @@ Return the parsed result, HTTP response, and request ID.
 #### Returns
 
 `Promise`\<[`WithResponse`](/sdk/javascript/api/interfaces/WithResponse)\<`T`>>
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

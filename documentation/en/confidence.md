@@ -447,6 +447,3 @@ score_confidence([answer.probabilities[level] for level in levels])
 ```
 
 The `bug_severity` answer in the [Score response example](/primitives/score#response-structure) has probabilities $(0, 0.57, 0.43)$. The most likely level is 1, the spread is $0.43$, and $\text{MAD}_{\text{unif}}$ for three levels is $\frac{2}{3}$, so confidence is $1 - 0.43 / \frac{2}{3} \approx 0.35$.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

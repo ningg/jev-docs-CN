@@ -101,6 +101,3 @@ Asynchronous and synchronous Python clients for the [TypeSafe](https://typesafe.
 </h2>
 
 Visit the [Usage guide](/sdk/python/usage) to learn more about patterns such as [typed responses](/sdk/python/usage#typed-system_one-responses), [model selection](/sdk/python/usage#choosing-a-model), [retries](/sdk/python/usage#retries), [HTTP/2](/sdk/python/usage#http2), or [error handling](/sdk/python/usage#error-handling).
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

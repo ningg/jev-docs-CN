@@ -656,6 +656,3 @@ field-level diff (mini -> final):
     * a good signal is high on real errors and low on correct ones, so a single threshold
       cleanly splits accept vs escalate
     * that separation is what pushes the pareto curve up-and-left
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

@@ -19,6 +19,3 @@ Choose a client SDK for installation instructions, examples, and API details.
 </Card>
 
 You can also call the [HTTP API](/api) directly from any language.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

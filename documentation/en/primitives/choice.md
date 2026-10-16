@@ -661,6 +661,3 @@ The response is `return_status` at confidence 1.0:
 ```
 
 The field names `question`, `focus`, `what`, `not_for`, and `examples` are not part of the API, and none are reserved. You choose them, the same way you choose option names. The model sees the names along with the values, so use short names that label what follows.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

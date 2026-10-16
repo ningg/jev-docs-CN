@@ -61,6 +61,3 @@ The state contains the content and supporting facts. [Questions](/primitives) de
 See [Primitives (Questions)](/primitives) for guidance on instructions, criteria, question types, and asking several questions about one state.
 
 See the [API reference](/api) for the request schema and [client SDKs](/sdk) for installation, typed inputs, and response handling.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

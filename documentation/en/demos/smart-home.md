@@ -59,6 +59,3 @@ This demo also shows how TypeSafe can be paired with LLMs to handle a system tha
 ## Run it yourself
 
 This demo is a simple Vite/React single-page app that uses the TypeSafe API to evaluate user requests. The full source code will be available on GitHub at release. Its README includes instructions for running the demo locally and an overview of which bits of the source code are responsible for which parts of the demo.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

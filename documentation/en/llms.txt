@@ -113,6 +113,3 @@
 - [Function: choice()](https://docs.typesafe.ai/sdk/javascript/api/functions/choice.md)
 - [Function: noul()](https://docs.typesafe.ai/sdk/javascript/api/functions/noul.md)
 - [Function: score()](https://docs.typesafe.ai/sdk/javascript/api/functions/score.md)
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

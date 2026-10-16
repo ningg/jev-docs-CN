@@ -1023,6 +1023,3 @@ Examples steer the model, and they only help when they look like your real input
 | Added examples array with example unrelated to browsers: "search fails, but browsing categories still works" | 1.43 | 0.35 |
 
 In this comparison, the matching example concentrates almost all the probability on one level. The unrelated example returns the same result as plain strings. Higher confidence does not establish which answer is correct. Choose examples with known expected levels, then test the revised descriptions on separate inputs before keeping them.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

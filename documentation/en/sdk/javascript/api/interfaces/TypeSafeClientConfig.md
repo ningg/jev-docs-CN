@@ -127,6 +127,3 @@ optional timeout?: number;
 ```
 
 Timeout per attempt in milliseconds, without a total retry budget. Default: 10000.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

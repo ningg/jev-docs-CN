@@ -40,6 +40,3 @@ Answer types are inferred from your questions. The package includes ESM, CommonJ
 
 Learn what TypeSafe can do in the [TypeSafe docs](https://docs.typesafe.ai/).
 See the SDK's [client](https://github.com/typesafe-ai/typesafe-sdk-js/blob/v0.6.0/src/client.ts) and [types](https://github.com/typesafe-ai/typesafe-sdk-js/blob/v0.6.0/src/types.ts) for API options and defaults.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

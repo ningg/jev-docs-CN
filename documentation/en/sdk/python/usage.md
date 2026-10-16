@@ -707,6 +707,3 @@ The SDK logs a warning and skips unrecognized answer kinds. Use `raw_http_respon
 </h3>
 
 Unknown extra fields on recognized responses are ignored.
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

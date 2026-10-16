@@ -189,6 +189,3 @@ Use this map to brainstorm where TypeSafe could fit in your industry. Open the c
 | **Verification** | An artifact must be checked for specific failure modes | Citation support, policy violations, tool-call errors, response quality |
 | **ML Feature Extraction** | A downstream classical ML model needs semantic signals | Purchase intent, product interest, competitive pressure, churn signals |
 | **Structured Data Extraction** | Known fields must be recovered from unstructured input | Candidate attributes, order fields, document labels |
-
-
-This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
