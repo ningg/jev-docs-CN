@@ -8,7 +8,12 @@
 
 **State** is the content you ask a System One model to evaluate. It could be a support message, a passage of text, or the current state of your application. You pass it in the `state` field of an API request, alongside the questions you want answered.
 
+State 是场景信息，在这个场景下，我们可以提出很多 question。
+
 Each request evaluates one state against one or more questions. All questions see the same state and are evaluated independently. You can mix [Choice](/primitives/choice), [Score](/primitives/score), and [Noul](/primitives/noul) questions in one request.
+
+当一次 API 调用中，包含多个 question 时，他们共享同一个 State，但是，question 内容相互不干扰结果。
+
 
 ## State can be a simple string or a structured JSON value
 
@@ -19,6 +24,8 @@ state = "My card was charged twice."
 ```
 
 State can also be a JSON object or array containing related context, examples, and other information that helps the model answer the associated questions. Think of state as the material you would present to a panel of experts before asking them to make a judgment. In Python, pass the corresponding string, dictionary, or list directly to `client.system_one(state=...)`.
+
+> State 可以输入 纯文本、也可以是 Json 对象，或者 文本数组，总之，就是提供的 `背景信息`；如果是 Json 结构，则，key-value 形式，可以提供很多结构化属性信息。
 
 | Format | Useful for | Example |
 | - | - | - |

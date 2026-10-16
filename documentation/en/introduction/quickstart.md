@@ -538,5 +538,85 @@ Jev 的 `score` 会将这些编号视为有序等级，并根据概率计算加�
 
 这样 `0` 表示平静，`1` 表示克制的不满，`2` 表示非常愤怒，分数越高就代表愤怒程度越高。
 
+### 附录 C：`confidence` 能否代替 `probabilities`
+
+不完全是。`confidence` 和 `probabilities` 有信息重叠，但不能认为 `confidence` 已经包含了 `probabilities` 的全部信息。在业务代码中，是否只关注 `confidence`，取决于你要解决什么问题。
+
+以 Jev 的 `choice` 类型为例，假设有三个分类选项：
+
+```json
+{
+  "choice": "technical",
+  "confidence": 0.78,
+  "probabilities": {
+    "technical": 0.85,
+    "sales": 0.00,
+    "billing": 0.15
+  }
+}
+```
+
+这里，`choice` 表示模型最终选择了什么，`confidence` 表示选择结果的相对确定程度，`probabilities` 则展示了各个候选选项的概率分布。
+
+#### 1. 为什么 `confidence` 不能替代 `probabilities`？
+
+假设有三个候选类别，以下两种分布都可能对应相同的 `confidence`：
+
+- 分布 A：`[0.85, 0.15, 0.00]`
+- 分布 B：`[0.85, 0.10, 0.05]`
+
+如果 `confidence` 是根据最大概率和候选数量计算的归一化指标：
+
+```text
+C = (p_max - 1/n) / (1 - 1/n)
+```
+
+那么这两种分布的 `confidence` 都是 `0.775`，约等于 `0.78`。
+
+但两者的业务含义并不完全一样：分布 A 把剩余概率全部分配给一个类别，分布 B 则分配给两个类别。假如你要判断结果可能被误分到哪个业务类别，仅看 `confidence` 就不够了。
+
+#### 2. 业务代码应该怎么用？
+
+可以按下面的原则设计：
+
+| 业务场景 | 主要关注什么 | 是否需要 `probabilities` |
+| --- | --- | --- |
+| 低风险分类，按置信度决定是否自动处理 | `choice` + `confidence` | 通常不需要 |
+| 置信度低时转人工 | `confidence` | 通常不需要 |
+| 判断第一名与第二名是否足够拉开差距 | `probabilities` | 需要 |
+| 根据具体备选类别采取不同操作 | `probabilities` | 需要 |
+| 需要分析误分类原因、评估模型质量 | `probabilities` + 实际标签 | 建议保留 |
+| Score 需要了解模型对各个等级的判断分布 | `score` + `probabilities` | 需要 |
+
+Jev 文档也明确，`confidence` 是对 `probabilities` 的分布特征进行压缩后的单一指标；当默认指标不符合业务需求时，可以从完整分布中计算其他指标。
+
+#### 3. 一个重要区别：`confidence` 不等于预测正确率
+
+例如：
+
+```json
+{
+  "choice": "technical",
+  "confidence": 0.78,
+  "probabilities": {
+    "technical": 0.85,
+    "sales": 0.00,
+    "billing": 0.15
+  }
+}
+```
+
+`confidence = 0.78` 不代表这个结果有 78% 的概率正确。它是根据概率分布计算出的确定性指标。要知道它在你的业务数据上是否可靠，需要将预测结果与真实标签进行对照评估。
+
+#### 4. 业务运行时简化，评估系统保留完整信息
+
+对于在 Java / Spring Boot 中接入 Jev 的场景，可以采用这样的设计：
+
+- **在线决策层**：读取 `choice` 或 `score`，配合 `confidence` 做自动处理、复核或转人工。
+- **日志与评估层**：保留 `probabilities`、`confidence`、模型版本、问题定义和真实标签（如果后续可获得），用来排查错误和调整阈值。
+- **复杂决策层**：当业务关心第二候选类别、候选差距或 Score 等级分布时，再直接使用 `probabilities`。
+
+最终结论：可以让 `confidence` 成为大多数简单业务流程的默认判断指标，但不要在数据模型和评估链路中丢弃 `probabilities`。这样既能保持业务代码简单，也不会损失后续优化模型和决策策略所需的信息。
+
 
 

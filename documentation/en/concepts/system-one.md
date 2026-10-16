@@ -16,6 +16,8 @@ Like an LLM, a System One model understands natural-language input. It returns t
   Jev currently accepts text input only. It evaluates strings, JSON objects, and arrays of text. Images, audio, and video are not supported (yet).
 </Note>
 
+> Tips: 当前 Jev 只支持 文本输入（Text）； 图片、视频、音频等，暂时还不支持。
+
 ## How it differs from an LLM
 
 System One models are trained for calibrated decisions: their probabilities are optimized against outcomes to reflect uncertainty. Calibration is measured across groups of predictions; it does not guarantee that an individual answer is correct.
