@@ -10,6 +10,8 @@
 
 TypeSafe's primitives are the small, typed building blocks you compose in code. They come in pairs: a question defines one judgment for a [System One model](/concepts/system-one) to make about a [state](/concepts/state), and its answer is the typed value that comes back. You compose the answers in your code to make decisions. There are three question types, each returning a different shape of answer.
 
+问的问题，必须有对应的答案选项。
+
 | Type | What it answers | Returns |
 | - | - | - |
 | [Choice](/primitives/choice) | Which of these options? | `choice`, `probabilities`, `confidence` |
@@ -18,20 +20,31 @@ TypeSafe's primitives are the small, typed building blocks you compose in code. 
 
 You can ask one question or send several together. Every question in a request sees the same state, is evaluated independently, and returns a typed answer under the ID you chose.
 
+可以一次 API 调用中，传入多个 question，这些会共享 state，但是，问题之间不干扰。
+
 ## Ask for one snap judgment per question
+
 
 System One models are built for fast, focused judgments. Ask for a judgment a knowledgeable person makes in a second given the right context. "Does this message convey urgency?" is a good question. "Analyze this message and determine the best course of action" is not. That needs slow reasoning, and it is a signal to break the task into small questions and compose the answers in code.
 
+针对复杂问题，一定要拆解为细粒度的明确的多个问题，并且给出每个问题的选项。
+
 If the judgment you want depends on several independent factors, ask about each factor separately and combine the answers with your own logic. Instead of "rate this startup pitch", ask about market size, technical feasibility, and differentiation, then weight them in code based on their relative importance. When priorities shift, change the value of weights rather than rewriting a prompt. [Ask multiple questions together](#ask-multiple-questions-together) shows how to do this.
+
+如果问题是需要多个因素决定的，建议，针对每个因素定一个一个独立问题，每个问题都发给 Jev 模型；最后将所有问题的结果，综合考虑。
 
 ## Define a question
 
 Every question has an ID, a `type`, and `instructions`. Choice and Score questions also take `criteria`, which define the options for a Choice question or the levels for a Score. Noul questions accept `criteria` as an optional clarification of what yes and no mean.
 
+问题，需要包含 4 个字段：`ID`、 `type`、`instructions`、`criteria`，即，问题标识ID、类型、描述、答案可选项。
+
 * ID. The key you pick, such as `refund_requested`. It identifies the answer in the response.
 * `type`. One of `choice`, `score`, or `noul`.
 * `instructions`. The question you are asking about the state. This is where your evaluation logic goes. Write it as a clear, specific question, or as a statement for the model to judge. A string is enough for most questions. It can also be an object or an array, which puts the question in one field and the data it refers to in others; see [Use structure in the questions](/concepts/how-to-build-with-system-one#use-structure-in-the-questions).
 * `criteria`. The possible answers: a map of options for a Choice question, an ordered list of levels for a Score, and an optional description of yes and no for a Noul. Each question type's page covers its shape.
+
+其中，instructions 问题描述，可以是 纯文本、或者 Json 对象.
 
 This question asks whether a customer requested a refund:
 
@@ -48,6 +61,8 @@ questions = {
 <Tip>
   Question IDs are for your code. They are not sent to the model. Write the complete question in `instructions`, even when the ID seems self-explanatory.
 </Tip>
+
+questionID，LLM 并没有感知其含义，只是用于对接 业务代码的，ID 的命名比较灵活。
 
 ## Choose a question type
 
@@ -67,6 +82,8 @@ Pick the type that matches the shape of the answer you need.
 
 If two types both seem to fit, prefer the one whose answer your code can act on directly. A Choice between `refund`, `rebook`, and `information` maps straight onto three code paths. A Score of customer frustration maps onto a threshold. A Noul maps onto an `if`.
 
+业务场景中，如果同一个问题，有多个可选的问题类型，倾向建议选择`代码可以直接应用`的类型。例如，代码逻辑是要分类判断，则，直接 Choice；代码逻辑是 if...else，直接用 Noul；如果是用户风险控制/欺诈风险判断，则，直接 Score.
+
 ## What comes back
 
 Answers are primitives too. Each question type returns a typed value that your code can compare, threshold, sort, pass into further logic, or put into the state of a follow-up request (see [When one question depends on another](#when-one-question-depends-on-another)).
@@ -84,9 +101,14 @@ Two properties of these answers make them composable:
 
 [Confidence](/confidence) explains how `confidence` is derived from `probabilities` and how to use it to decide when to act automatically and when to escalate to a person.
 
+confidence 置信度，跟 选项的概率分布强相关，且用于判断是否 自动执行 还是 需要人工校正。
+
+
 ## Reference specific fields
 
 The content being evaluated, the [state](/concepts/state), is often a JSON object with several parts: a conversation, a record, a policy. When a question is about one of those parts, name it in the `instructions` with a dot-and-index path to its key, including the backticks. The model then knows which part of the state to judge.
+
+如果 State 是 Json 结构的，可以直接在 question 的 instructions 中，直接采用 `dot-and-index` 格式来引用 State 中的参数，例如下面示例中的 `ticket.messages[0].text`
 
 Take the support conversation from the State page:
 
@@ -133,6 +155,8 @@ Explicit paths make it clear which parts of a structured state should inform eac
 ## Ask multiple questions together
 
 Send every question that uses the same state in one request. You can mix question types freely. System One models evaluate every question in a request in parallel. Adding questions barely changes the response time and costs only the tokens for the extra questions, which are cheap. Asking a question you might not need is close to free.
+
+单次请求中，问多个 question 对 rt 的影响很小，每个 question 是并发处理的。
 
 This request classifies a customer message, checks for urgency, and scores frustration all at once:
 
@@ -214,6 +238,8 @@ See [client SDKs](/sdk) for installation and usage in your language.
 
 Ask every question your code might need, including ones whose answer only matters for some inputs, and let the code decide which answers to use. If a ticket turns out not to be a bug report, ignore the severity answer. We call this the [Speculative fan-out](/patterns/fan-out) pattern. The [Parallel questions cookbook](/cookbooks/parallel_questions) shows how batching 13 questions into one call is 11.5x cheaper and 9.6x faster than 13 separate calls, with no change in the answers.
 
+一次请求中，就集中问下所有潜在问题，即使有些问题只在部分场景下才需求，无需等待前置问题的答案，可以直接一次性问所有问题，然后，针对问题的结果，再做业务逻辑。这种做法，部分问题看起来浪费资源了，但实际上，成本非常低，相对多次的请求，这种一次问所有问题的做法，耗费的资源降低了 1 个数量级。
+
 <Tip>
   Coding agents fall into the one question per call habit more than people do. The [TypeSafe agent skill](/agent-skill#installation) tells your agent to put many questions in each call, including ones that only matter for some inputs.
 </Tip>
@@ -227,6 +253,8 @@ For example, ticket priority might be built from three Score questions: how seve
 ### When one question depends on another
 
 Questions in the same request are independent: one answer does not become context for another question. If a later judgment depends on an earlier answer, make a second request in code. The dependency is real only when your code cannot build the second request until it has the first answer: it needs the answer to fetch more data for the state, to decide what the state is made of, or to pick the next question's options. Otherwise, ask the questions together and combine their answers in code.
+
+仅当问题之间有强依赖时，才分为 2 次请求，否则，只有有可能，我们就 1 次请求，获取所有问题的答案。
 
 Two requests are the exception, not the rule. If the second request's questions could have been asked against the original state, ask them in the first request and let the code ignore the ones it doesn't need. Three cookbooks make a second request for a real reason. [Skill suggestion](/cookbooks/skill_suggestion) ranks 182 skills in one request, then fetches the full text of the top three and judges them again against that better evidence. [Structure recovery](/cookbooks/autoformat) asks whether each line break split a sentence, merges lines into blocks from those answers, then classifies the blocks, which did not exist until the first request had answered. [Hierarchical classification](/cookbooks/hierarchical_classification) uses each Choice answer to decide which options the next request offers.
 
