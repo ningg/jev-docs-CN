@@ -49,7 +49,11 @@ extra_css:
   - stylesheets/extra.css
 
 extra_javascript:
+  - javascripts/typesafe-playground.js
   - javascripts/typesafe-links.js
+
+hooks:
+  - scripts/typesafe_example.py
 
 markdown_extensions:
   - meta

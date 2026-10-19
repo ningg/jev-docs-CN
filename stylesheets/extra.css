@@ -428,3 +428,11 @@
 [data-md-color-scheme="slate"] .md-typeset .ts-accordion > summary:hover {
   background: rgba(255, 255, 255, 0.04);
 }
+
+.md-typeset .ts-playground {
+  margin: 0.15rem 0 1.35rem;
+}
+
+.md-typeset .ts-playground-link {
+  font-weight: 600;
+}

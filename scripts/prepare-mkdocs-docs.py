@@ -346,22 +346,6 @@ def jsx_style_to_html(style_js: str) -> str:
     return ";".join(parts)
 
 
-def convert_typesafe_examples(text: str) -> str:
-    def replacer(attrs: str, content: str | None) -> str:
-        # Self-closing with example={{...}} in attrs
-        m = re.search(r"example=\{\{([\s\S]*)\}\}\s*$", attrs)
-        if m:
-            body = m.group(1).strip()
-            return f'\n```javascript title="Example request"\n{{\n{body}\n}}\n```\n'
-        return (
-            '\n!!! note "Example"\n\n'
-            "    Interactive example available on the "
-            "[official TypeSafe docs](https://docs.typesafe.ai/).\n"
-        )
-
-    return replace_tags(text, "TypesafeExample", replacer)
-
-
 def convert_admonitions(text: str) -> str:
     for tag, kind in ADMONITION_TAGS.items():
 
@@ -640,25 +624,42 @@ def clean_fences(text: str) -> str:
         if title_m:
             title = title_m.group(2)
 
+        # Quoted theme= comes from TypesafeExample (display value). Brace form
+        # theme={null} is Mintlify noise and is dropped below.
+        theme: str | None = None
+        theme_m = re.search(r"""\btheme=(["'])(.*?)\1""", meta)
+        if theme_m:
+            theme = theme_m.group(2)
+
         rest = meta
         rest = re.sub(r"""\btitle=(["'])(.*?)\1""", "", rest)
+        rest = re.sub(r"""\btheme=(["'])(.*?)\1""", "", rest)
         rest = re.sub(r"\btheme=\{[^}]*\}", "", rest)
         rest = re.sub(r"\bfocus=\{[^}]*\}", "", rest)
         rest = re.sub(r"\bactions=\{[^}]*\}", "", rest)
         rest = re.sub(r"\bexpandable\b", "", rest)
         rest = re.sub(r"\bwrap\b", "", rest)
-        rest = rest.strip().lstrip("`").strip()
+        rest = rest.strip().lstrip("`").strip().strip("{}").strip()
 
         parts = rest.split()
-        lang = parts[0] if parts else ""
+        lang = parts[0].lstrip(".") if parts else ""
         if title is None and len(parts) > 1:
             title = " ".join(parts[1:])
 
+        safe_title = title.replace('"', '\\"') if title else None
+        # theme= is not a pymdownx highlight option; the brace header keeps it
+        # in the source and still renders as a code block.
+        if theme is not None:
+            safe_theme = theme.replace('"', '\\"')
+            bits = [f".{lang}" if lang else "."]
+            bits.append(f'theme="{safe_theme}"')
+            if safe_title:
+                bits.append(f'title="{safe_title}"')
+            return f"{indent}```{{{' '.join(bits)}}}"
+
         out = f"{indent}```{lang}"
-        if title:
-            # Escape quotes in title for the attribute form Material expects.
-            safe = title.replace('"', '\\"')
-            out += f' title="{safe}"'
+        if safe_title:
+            out += f' title="{safe_title}"'
         return out
 
     return FENCE_OPEN_RE.sub(repl, text)
@@ -816,8 +817,7 @@ def finalize_trailing_blank_lines(text: str, blank_lines: int = 4) -> str:
 def transform(text: str, rel_path: Path) -> str:
     text = INDEX_BLOCK_RE.sub("", text)
     text = strip_typesafe_example_helper(text)
-    # Nested structures: convert children before parents where needed
-    text = convert_typesafe_examples(text)
+    # <TypesafeExample> stays in the page; the MkDocs extension renders it.
     text = convert_param_fields(text)
     text = convert_expandable(text)
     text = convert_param_fields(text)  # nested fields inside expandables
